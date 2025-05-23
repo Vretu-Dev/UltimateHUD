@@ -12,6 +12,7 @@ using HintServiceMeow.Core.Utilities;
 using HintServiceMeow.Core.Enum;
 using HintServiceMeow.Core.Extension;
 using Hint = HintServiceMeow.Core.Models.Hints.Hint;
+using PlayerRoles;
 
 namespace UltimateHUD
 {
@@ -20,7 +21,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHud";
-        public override Version Version => new Version(1, 0, 0);
+        public override Version Version => new Version(1, 1, 0);
 
         private readonly Dictionary<Player, Hint> timeHints = new Dictionary<Player, Hint>();
 
@@ -32,6 +33,8 @@ namespace UltimateHUD
 
         private readonly Dictionary<Player, Hint> mapInfoHints = new Dictionary<Player, Hint>();
 
+        private static readonly Dictionary<Player, int> playerKills = new Dictionary<Player, int>();
+
         private Timer timer;
 
         public override void OnEnabled()
@@ -39,6 +42,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Player.Verified += OnVerified;
             Exiled.Events.Handlers.Server.RoundStarted += OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded += OnRoundEnded;
+            Exiled.Events.Handlers.Player.Died += OnPlayerDied;
             base.OnEnabled();
         }
 
@@ -47,6 +51,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Player.Verified -= OnVerified;
             Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded -= OnRoundEnded;
+            Exiled.Events.Handlers.Player.Died -= OnPlayerDied;
 
             timer?.Stop();
             timer?.Dispose();
@@ -140,10 +145,13 @@ namespace UltimateHUD
                     uint observedId = (uint)observed.Id;
                     string observedRole = observed.Role.Type.ToString();
                     string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
+                    int observedKills = GetKills(observed);
+
                     string observedInfoText = Config.SpectatorHud
                     .Replace("{nickname}", observedNickname)
                     .Replace("{id}", observedId.ToString())
-                    .Replace("{role}", coloredObservedRole);
+                    .Replace("{role}", coloredObservedRole)
+                    .Replace("{kills}", observedKills.ToString());
 
                     var specHint = new Hint
                     {
@@ -195,11 +203,13 @@ namespace UltimateHUD
             uint id = (uint)player.Id;
             string role = player.Role.Type.ToString();
             string coloredRole = $"<color={roleColor}>{role}</color>";
+            int kills = GetKills(player);
 
             string playerInfoText = Config.PlayerHud
             .Replace("{nickname}", nickname)
             .Replace("{id}", id.ToString())
-            .Replace("{role}", coloredRole);
+            .Replace("{role}", coloredRole)
+            .Replace("{kills}", kills.ToString());
 
             var playerInfoHint = new Hint
             {
@@ -261,6 +271,46 @@ namespace UltimateHUD
                 pd.RemoveHint(kvp.Value);
             }
             mapInfoHints.Clear();
+        }
+
+        private static void OnPlayerDied(DiedEventArgs ev)
+        {
+            if (ev.DamageHandler.Type == DamageType.PocketDimension)
+            {
+                foreach (var player in Player.List)
+                {
+                    if (player.Role.Type == RoleTypeId.Scp106)
+                    {
+                        Player killer = player;
+                        if (playerKills.ContainsKey(killer))
+                        {
+                            playerKills[killer]++;
+                        }
+                        else
+                        {
+                            playerKills[killer] = 1;
+                        }
+                    }
+                }
+            }
+
+            if (ev.Attacker != null && ev.Attacker != ev.Player)
+            {
+                Player killer = ev.Attacker;
+
+                if (playerKills.ContainsKey(killer))
+                {
+                    playerKills[killer]++;
+                }
+                else
+                {
+                    playerKills[killer] = 1;
+                }
+            }
+        }
+        public static int GetKills(Player player)
+        {
+            return playerKills.TryGetValue(player, out int kills) ? kills : 0;
         }
     }
 }
