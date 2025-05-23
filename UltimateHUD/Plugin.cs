@@ -21,7 +21,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHud";
-        public override Version Version => new Version(1, 1, 0);
+        public override Version Version => new Version(1, 2, 0);
 
         private readonly Dictionary<Player, Hint> timeHints = new Dictionary<Player, Hint>();
 
@@ -142,6 +142,10 @@ namespace UltimateHUD
                 {
                     string observedRoleColor = "#" + ColorUtility.ToHtmlStringRGB(observed.Role.Color);
                     string observedNickname = observed.Nickname;
+
+                    if (observedNickname.Length > 14)
+                        observedNickname = observedNickname.Substring(0, 14) + "...";
+
                     uint observedId = (uint)observed.Id;
                     string observedRole = observed.Role.Type.ToString();
                     string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
@@ -200,6 +204,10 @@ namespace UltimateHUD
             // HUD for Players
             string roleColor = "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
             string nickname = player.Nickname;
+
+            if (nickname.Length > 20)
+                nickname = nickname.Substring(0, 20) + "...";
+
             uint id = (uint)player.Id;
             string role = player.Role.Type.ToString();
             string coloredRole = $"<color={roleColor}>{role}</color>";
