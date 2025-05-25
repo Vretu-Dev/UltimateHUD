@@ -21,15 +21,20 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHud";
-        public override Version Version => new Version(1, 2, 0);
+        public override Version Version => new Version(2, 0, 0);
+        public static Plugin Instance { get; private set; }
 
         private readonly Dictionary<Player, Hint> timeHints = new Dictionary<Player, Hint>();
 
         private readonly Dictionary<Player, Hint> tpsHints = new Dictionary<Player, Hint>();
 
+        private readonly Dictionary<Player, Hint> roundTimeHints = new Dictionary<Player, Hint>();
+
         private readonly Dictionary<Player, Hint> playerInfoHints = new Dictionary<Player, Hint>();
 
         private readonly Dictionary<Player, Hint> spectatorPlayerInfoHints = new Dictionary<Player, Hint>();
+
+        private readonly Dictionary<Player, Hint> serverInfoHints = new Dictionary<Player, Hint>();
 
         private readonly Dictionary<Player, Hint> mapInfoHints = new Dictionary<Player, Hint>();
 
@@ -39,6 +44,7 @@ namespace UltimateHUD
 
         public override void OnEnabled()
         {
+            Instance = this;
             Exiled.Events.Handlers.Player.Verified += OnVerified;
             Exiled.Events.Handlers.Server.RoundStarted += OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded += OnRoundEnded;
@@ -48,6 +54,7 @@ namespace UltimateHUD
 
         public override void OnDisabled()
         {
+            Instance = null;
             Exiled.Events.Handlers.Player.Verified -= OnVerified;
             Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded -= OnRoundEnded;
@@ -94,52 +101,86 @@ namespace UltimateHUD
 
             if (timeHints.TryGetValue(player, out var oldTimeHint)) pd.RemoveHint(oldTimeHint);
             if (tpsHints.TryGetValue(player, out var oldTpsHint)) pd.RemoveHint(oldTpsHint);
+            if (roundTimeHints.TryGetValue(player, out var oldRoundTimeHint)) pd.RemoveHint(oldRoundTimeHint);
             if (playerInfoHints.TryGetValue(player, out var oldPlayerHint)) pd.RemoveHint(oldPlayerHint);
             if (spectatorPlayerInfoHints.TryGetValue(player, out var oldSpecHint)) pd.RemoveHint(oldSpecHint);
+            if (serverInfoHints.TryGetValue(player, out var oldServerInfoHint)) pd.RemoveHint(oldServerInfoHint);
             if (mapInfoHints.TryGetValue(player, out var oldMapHint)) pd.RemoveHint(oldMapHint);
 
-            string timerColor = "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
-            DateTime utc2 = DateTime.UtcNow.AddHours(2);
-            string timeText = Config.Clock
-            .Replace("{color}", timerColor)
-            .Replace("{time}", utc2.ToString("HH:mm:ss"));
-
-            var timeHint = new Hint
+            // CLOCK HINT
+            if (Options.ShouldShow(Config.ClockVisual, player) && Config.EnableClock)
             {
-                Text = timeText,
-                FontSize = 25,
-                YCoordinate = 20,
-                Alignment = HintAlignment.Left
-            };
-            pd.AddHint(timeHint);
-            timeHints[player] = timeHint;
-            pd.RemoveAfter(timeHint, 1.1f);
+                string timerColor = "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
+                DateTime utc = DateTime.UtcNow.AddHours(Config.TimeZone);
+                string timeText = Config.Clock
+                .Replace("{color}", timerColor)
+                .Replace("{time}", utc.ToString("HH:mm"));
 
-            int tps = (int)Server.Tps;
-            int maxTps = (int)Server.MaxTps;
-            string tpsColor = "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
-            string tpsText = Config.Tps
-            .Replace("{color}", tpsColor)
-            .Replace("{tps}", tps.ToString())
-            .Replace("{maxTps}", maxTps.ToString());
+                var timeHint = new Hint
+                {
+                    Text = timeText,
+                    FontSize = 25,
+                    YCoordinate = 20,
+                    XCoordinate = Config.ClockXCordinate
+                };
+                pd.AddHint(timeHint);
+                timeHints[player] = timeHint;
+                pd.RemoveAfter(timeHint, 1.1f);
+            }
 
-            var tpsHint = new Hint
+            // TPS HINT
+            if (Options.ShouldShow(Config.TpsVisual, player) && Config.EnableTps)
             {
-                Text = tpsText,
-                FontSize = 25,
-                YCoordinate = 20,
-                Alignment = HintAlignment.Center
-            };
-            pd.AddHint(tpsHint);
-            tpsHints[player] = tpsHint;
-            pd.RemoveAfter(tpsHint, 1.1f);
+                int tps = (int)Server.Tps;
+                int maxTps = (int)Server.MaxTps;
+                string tpsColor = "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
+                string tpsText = Config.Tps
+                .Replace("{color}", tpsColor)
+                .Replace("{tps}", tps.ToString())
+                .Replace("{maxTps}", maxTps.ToString());
+
+                var tpsHint = new Hint
+                {
+                    Text = tpsText,
+                    FontSize = 25,
+                    YCoordinate = 20,
+                    XCoordinate = Config.TpsXCordinate
+                };
+                pd.AddHint(tpsHint);
+                tpsHints[player] = tpsHint;
+                pd.RemoveAfter(tpsHint, 1.1f);
+            }
+
+            // ROUND TIME HINT
+            if (Options.ShouldShow(Config.RoundTimeVisual, player) && Config.EnableRoundTime)
+            {
+                TimeSpan elapsed = Round.ElapsedTime;
+                string elapsedFormatted = elapsed.ToString(@"mm\:ss");
+                string elapsedColor = "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
+                string roundTimeText = Config.RoundTime
+                .Replace("{color}", elapsedColor)
+                .Replace("{round_time}", elapsedFormatted);
+
+                var roundTimeHint = new Hint
+                {
+                    Text = roundTimeText,
+                    FontSize = 25,
+                    YCoordinate = 20,
+                    XCoordinate = Config.RoundTimeXCordinate
+                };
+                pd.AddHint(roundTimeHint);
+                roundTimeHints[player] = roundTimeHint;
+                pd.RemoveAfter(roundTimeHint, 1.1f);
+            }
 
             // HUD for Spectators
             if (player.Role is SpectatorRole spectatorRole)
             {
                 Player observed = spectatorRole.SpectatedPlayer;
+
                 if (observed != null)
                 {
+                    // MAIN HUD
                     string observedRoleColor = "#" + ColorUtility.ToHtmlStringRGB(observed.Role.Color);
                     string observedNickname = observed.Nickname;
 
@@ -160,7 +201,7 @@ namespace UltimateHUD
                     var specHint = new Hint
                     {
                         Text = observedInfoText,
-                        FontSize = 35,
+                        FontSize = 33,
                         YCoordinate = 1050,
                         Alignment = HintAlignment.Center
                     };
@@ -169,6 +210,7 @@ namespace UltimateHUD
                     pd.RemoveAfter(specHint, 1.1f);
                 }
 
+                // MAP INFO HINT
                 int engaged = Generator.List.Count(g => g.IsEngaged);
                 int maxGenerators = 3;
 
@@ -176,7 +218,7 @@ namespace UltimateHUD
                 string warheadStatus = isArmed ? "Armed" : "Not Armed";
                 string warheadColor = isArmed ? "red" : "green";
 
-                string mapInfoText = Config.SpectatorInfo
+                string mapInfoText = Config.SpectatorMapInfo
                 .Replace("{engaged}", engaged.ToString())
                 .Replace("{maxGenerators}", maxGenerators.ToString())
                 .Replace("{warheadColor}", warheadColor)
@@ -187,17 +229,40 @@ namespace UltimateHUD
                     Text = mapInfoText,
                     FontSize = 27,
                     YCoordinate = 1000,
-                    Alignment = HintAlignment.Center
+                    Alignment = HintAlignment.Right
                 };
                 pd.AddHint(mapHint);
                 mapInfoHints[player] = mapHint;
                 pd.RemoveAfter(mapHint, 1.1f);
 
+                // Clear Player Info Hints if player is a spectator
                 if (playerInfoHints.ContainsKey(player))
                 {
                     pd.RemoveHint(playerInfoHints[player]);
                     playerInfoHints.Remove(player);
                 }
+
+                // SERVER INFO HINT
+                int totalPlayers = Player.List.Count(p => !p.IsHost);
+                int maxPlayers = Server.MaxPlayerCount;
+                int spectators = Player.List.Count(p => p.Role is SpectatorRole && !p.IsHost);
+
+                string serverInfoText = Config.SpectatorServerInfo
+                    .Replace("{players}", totalPlayers.ToString())
+                    .Replace("{maxPlayers}", maxPlayers.ToString())
+                    .Replace("{spectators}", spectators.ToString());
+
+                var serverInfoHint = new Hint
+                {
+                    Text = serverInfoText,
+                    FontSize = 27,
+                    YCoordinate = 1000,
+                    Alignment = HintAlignment.Left
+                };
+                pd.AddHint(serverInfoHint);
+                serverInfoHints[player] = serverInfoHint;
+                pd.RemoveAfter(serverInfoHint, 1.1f);
+
                 return;
             }
 
@@ -222,7 +287,7 @@ namespace UltimateHUD
             var playerInfoHint = new Hint
             {
                 Text = playerInfoText,
-                FontSize = 35,
+                FontSize = 33,
                 YCoordinate = 1050,
                 Alignment = HintAlignment.Center
             };
@@ -230,6 +295,7 @@ namespace UltimateHUD
             playerInfoHints[player] = playerInfoHint;
             pd.RemoveAfter(playerInfoHint, 1.1f);
 
+            // Clear Spectator Hints if player is not a spectator
             if (spectatorPlayerInfoHints.TryGetValue(player, out var oldSpecHint2))
             {
                 pd.RemoveHint(oldSpecHint2);
@@ -240,6 +306,12 @@ namespace UltimateHUD
             {
                 pd.RemoveHint(oldMapHint2);
                 mapInfoHints.Remove(player);
+            }
+
+            if (serverInfoHints.TryGetValue(player, out var oldServerHint2))
+            {
+                pd.RemoveHint(oldServerHint2);
+                serverInfoHints.Remove(player);
             }
         }
 
@@ -259,6 +331,13 @@ namespace UltimateHUD
             }
             tpsHints.Clear();
 
+            foreach (var kvp in roundTimeHints)
+            {
+                var pd = PlayerDisplay.Get(kvp.Key.ReferenceHub);
+                pd.RemoveHint(kvp.Value);
+            }
+            roundTimeHints.Clear();
+
             foreach (var kvp in playerInfoHints)
             {
                 var pd = PlayerDisplay.Get(kvp.Key.ReferenceHub);
@@ -273,6 +352,13 @@ namespace UltimateHUD
             }
             spectatorPlayerInfoHints.Clear();
 
+            foreach (var kvp in serverInfoHints)
+            {
+                var pd = PlayerDisplay.Get(kvp.Key.ReferenceHub);
+                pd.RemoveHint(kvp.Value);
+            }
+            serverInfoHints.Clear();
+
             foreach (var kvp in mapInfoHints)
             {
                 var pd = PlayerDisplay.Get(kvp.Key.ReferenceHub);
@@ -281,6 +367,7 @@ namespace UltimateHUD
             mapInfoHints.Clear();
         }
 
+        // Kill Counter handler
         private static void OnPlayerDied(DiedEventArgs ev)
         {
             if (ev.DamageHandler.Type == DamageType.PocketDimension)
