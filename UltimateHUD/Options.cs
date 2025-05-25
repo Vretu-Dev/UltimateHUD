@@ -1,5 +1,7 @@
 ﻿using Exiled.API.Features;
 using Exiled.API.Features.Roles;
+using PlayerRoles;
+using System.Linq;
 
 namespace UltimateHUD
 {
@@ -20,6 +22,11 @@ namespace UltimateHUD
                 return true;
 
             return false;
+        }
+
+        public static string GetRoleDisplayName(this Config config, RoleTypeId roleType)
+        {
+            return Plugin.Instance.Translation.GameRoles.FirstOrDefault(r => r.Role == roleType)?.Name ?? roleType.ToString();
         }
     }
 }

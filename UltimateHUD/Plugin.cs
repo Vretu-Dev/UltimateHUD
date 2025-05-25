@@ -16,7 +16,7 @@ using PlayerRoles;
 
 namespace UltimateHUD
 {
-    public class Plugin : Plugin<Config>
+    public class Plugin : Plugin<Config, Translations>
     {
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
@@ -188,7 +188,7 @@ namespace UltimateHUD
                         observedNickname = observedNickname.Substring(0, 14) + "...";
 
                     uint observedId = (uint)observed.Id;
-                    string observedRole = observed.Role.Type.ToString();
+                    string observedRole = Config.GetRoleDisplayName(player.Role.Type);
                     string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
                     int observedKills = GetKills(observed);
 
@@ -274,7 +274,7 @@ namespace UltimateHUD
                 nickname = nickname.Substring(0, 20) + "...";
 
             uint id = (uint)player.Id;
-            string role = player.Role.Type.ToString();
+            string role = Config.GetRoleDisplayName(player.Role.Type);
             string coloredRole = $"<color={roleColor}>{role}</color>";
             int kills = GetKills(player);
 
