@@ -1,5 +1,5 @@
 # UltimateHUD
-### Requirement
+### Requirements
 - Exiled 9.6.0 or newest
 - Hint Service Meow [V5.4.0](https://github.com/MeowServer/HintServiceMeow/releases/tag/V5.4.0)
 ### Gameplay
