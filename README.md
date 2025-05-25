@@ -1,4 +1,8 @@
 # UltimateHUD
 
-![Zrzut ekranu 2025-05-23 144500](https://github.com/user-attachments/assets/725c3514-1b55-4956-84dd-b671faa912c0)
-![Zrzut ekranu 2025-05-23 144524](https://github.com/user-attachments/assets/24a76141-6916-45ea-afa0-16d4cfecd79d)
+### Gameplay
+![image](https://github.com/user-attachments/assets/8595f42f-7ffe-4443-bb54-b02407b8ac42)
+
+### Spectator
+![image](https://github.com/user-attachments/assets/18d651cc-5d94-4f87-bbdf-97d30861ff2d)
+
