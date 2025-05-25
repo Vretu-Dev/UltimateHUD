@@ -188,7 +188,7 @@ namespace UltimateHUD
                         observedNickname = observedNickname.Substring(0, 14) + "...";
 
                     uint observedId = (uint)observed.Id;
-                    string observedRole = Config.GetRoleDisplayName(player.Role.Type);
+                    string observedRole = Config.GetRoleDisplayName(observed.Role.Type);
                     string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
                     int observedKills = GetKills(observed);
 
