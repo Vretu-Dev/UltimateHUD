@@ -21,7 +21,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHud";
-        public override Version Version => new Version(2, 0, 0);
+        public override Version Version => new Version(2, 1, 0);
         public static Plugin Instance { get; private set; }
 
         private readonly Dictionary<Player, Hint> timeHints = new Dictionary<Player, Hint>();
