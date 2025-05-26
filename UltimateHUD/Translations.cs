@@ -1,13 +1,18 @@
 ﻿using Exiled.API.Interfaces;
 using PlayerRoles;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace UltimateHUD
 {
     public class RoleName
     {
         public RoleTypeId Role { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class CustomRoleName
+    {
+        public string CustomRole { get; set; }
         public string Name { get; set; }
     }
 
@@ -36,7 +41,14 @@ namespace UltimateHUD
             new RoleName { Role = RoleTypeId.Scp106, Name = "SCP-106" },
             new RoleName { Role = RoleTypeId.Scp173, Name = "SCP-173" },
             new RoleName { Role = RoleTypeId.Scp939, Name = "SCP-939" },
-            new RoleName { Role = RoleTypeId.Scp3114, Name = "SCP-3114" }
+            new RoleName { Role = RoleTypeId.Scp3114, Name = "SCP-3114" },
+            
+        };
+        public List<CustomRoleName> CustomGameRoles { get; set; } = new List<CustomRoleName>()
+        {
+            new CustomRoleName { CustomRole = "Serpents Hand Agent", Name = "Serpent Agent" },
+            new CustomRoleName { CustomRole = "Serpents Hand Guardian", Name = "Serpent Leader" },
+            new CustomRoleName { CustomRole = "Serpents Hand Enchanter", Name = "Serpent Specialist" }
         };
     }
 }

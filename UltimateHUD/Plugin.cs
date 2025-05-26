@@ -21,7 +21,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHud";
-        public override Version Version => new Version(2, 1, 0);
+        public override Version Version => new Version(2, 2, 0);
         public static Plugin Instance { get; private set; }
 
         private readonly Dictionary<Player, Hint> timeHints = new Dictionary<Player, Hint>();
@@ -188,7 +188,7 @@ namespace UltimateHUD
                         observedNickname = observedNickname.Substring(0, 14) + "...";
 
                     uint observedId = (uint)observed.Id;
-                    string observedRole = Config.GetRoleDisplayName(observed.Role.Type);
+                    string observedRole = Translation.GetRoleDisplayName(observed);
                     string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
                     int observedKills = GetKills(observed);
 
@@ -274,7 +274,7 @@ namespace UltimateHUD
                 nickname = nickname.Substring(0, 20) + "...";
 
             uint id = (uint)player.Id;
-            string role = Config.GetRoleDisplayName(player.Role.Type);
+            string role = Translation.GetRoleDisplayName(player);
             string coloredRole = $"<color={roleColor}>{role}</color>";
             int kills = GetKills(player);
 

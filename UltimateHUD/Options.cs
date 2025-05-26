@@ -1,6 +1,6 @@
 ﻿using Exiled.API.Features;
 using Exiled.API.Features.Roles;
-using PlayerRoles;
+using Exiled.CustomRoles.API;
 using System.Linq;
 
 namespace UltimateHUD
@@ -24,9 +24,19 @@ namespace UltimateHUD
             return false;
         }
 
-        public static string GetRoleDisplayName(this Config config, RoleTypeId roleType)
+        public static string GetRoleDisplayName(this Translations config, Player player)
         {
-            return Plugin.Instance.Translation.GameRoles.FirstOrDefault(r => r.Role == roleType)?.Name ?? roleType.ToString();
+            var customRole = player.GetCustomRoles().FirstOrDefault();
+
+            if (customRole != null)
+            {
+                var translation = config.CustomGameRoles.FirstOrDefault(r => r.CustomRole == customRole.Name)?.Name;
+                return translation ?? customRole.Name;
+            }
+
+            var normalTranslation = config.GameRoles.FirstOrDefault(r => r.Role == player.Role.Type)?.Name;
+
+            return normalTranslation ?? player.Role.Type.ToString();
         }
     }
 }
