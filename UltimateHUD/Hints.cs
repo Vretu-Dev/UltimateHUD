@@ -281,7 +281,8 @@ namespace UltimateHUD
         public static void RemoveAllHints()
         {
             foreach (var player in Player.List.ToList())
-                RemoveHints(player);
+                if (!player.IsHost)
+                    RemoveHints(player);
         }
 
     }
