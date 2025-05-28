@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using System.Timers;
 using System.Collections.Generic;
 using Exiled.API.Enums;
 using Exiled.API.Features;
@@ -13,6 +12,7 @@ using HintServiceMeow.Core.Enum;
 using HintServiceMeow.Core.Extension;
 using Hint = HintServiceMeow.Core.Models.Hints.Hint;
 using PlayerRoles;
+using MEC;
 
 namespace UltimateHUD
 {
@@ -40,7 +40,7 @@ namespace UltimateHUD
 
         private static readonly Dictionary<Player, int> playerKills = new Dictionary<Player, int>();
 
-        private Timer timer;
+        private CoroutineHandle hudCoroutine;
 
         public override void OnEnabled()
         {
@@ -60,8 +60,9 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Server.RoundEnded -= OnRoundEnded;
             Exiled.Events.Handlers.Player.Died -= OnPlayerDied;
 
-            timer?.Stop();
-            timer?.Dispose();
+            if (hudCoroutine.IsRunning)
+                Timing.KillCoroutines(hudCoroutine);
+
             ClearAllHints();
             base.OnDisabled();
         }
@@ -74,16 +75,35 @@ namespace UltimateHUD
 
         private void OnRoundStarted()
         {
-            timer = new Timer(Config.MsRefreshRate);
-            timer.Elapsed += (s, e) => UpdateHudForAll();
-            timer.Start();
+            if (hudCoroutine.IsRunning)
+                Timing.KillCoroutines(hudCoroutine);
+
+            hudCoroutine = Timing.RunCoroutine(HudCoroutine());
         }
 
         private void OnRoundEnded(RoundEndedEventArgs ev)
         {
-            timer?.Stop();
-            timer?.Dispose();
+            if (hudCoroutine.IsRunning)
+                Timing.KillCoroutines(hudCoroutine);
+
             ClearAllHints();
+            playerKills.Clear();
+        }
+
+        private IEnumerator<float> HudCoroutine()
+        {
+            while (Round.IsStarted)
+            {
+                try
+                {
+                    UpdateHudForAll();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"[UltimateHUD] Exception in HudCoroutine: {e}");
+                }
+                yield return Timing.WaitForSeconds(Config.MsRefreshRate / 1000f);
+            }
         }
 
         private void UpdateHudForAll()
