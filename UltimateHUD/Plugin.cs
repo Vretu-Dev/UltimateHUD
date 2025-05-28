@@ -1,30 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using Exiled.API.Features;
+using LabApi.Features;
+using LabApi.Loader.Features.Plugins;
 
 namespace UltimateHUD
 {
-    public class Plugin : Plugin<Config, Translations>
+    public class Plugin : Plugin<Config>
     {
         public override string Name => "UltimateHUD";
+        public override string Description => "Customizable HUD for SCP:SL.";
         public override string Author => "Vretu";
-        public override string Prefix => "UltimateHud";
-        public override Version Version => new Version(3, 1, 0);
-        public override Version RequiredExiledVersion { get; } = new Version(9, 6, 0);
+        public override Version Version => new Version(1, 0, 0);
+        public override Version RequiredApiVersion { get; } = new Version(LabApiProperties.CompiledVersion);
         public static Plugin Instance { get; private set; }
 
-        public override void OnEnabled()
+        public override void Enable()
         {
             Instance = this;
             EventHandlers.RegisterEvents();
-            base.OnEnabled();
         }
 
-        public override void OnDisabled()
+        public override void Disable()
         {
             Instance = null;
             EventHandlers.UnregisterEvents();
-            base.OnDisabled();
         }
     }
 }

@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using HintServiceMeow.Core.Enum;
 using HintServiceMeow.Core.Utilities;
 using Hint = HintServiceMeow.Core.Models.Hints.Hint;
-using Exiled.API.Features;
-using Exiled.API.Features.Roles;
-using Exiled.API.Enums;
 using UnityEngine;
+using LabApi.Features.Wrappers;
+using PlayerRoles.Spectating;
 
 namespace UltimateHUD
 {

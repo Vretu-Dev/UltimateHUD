@@ -1,8 +1,7 @@
-﻿using Exiled.API.Enums;
-using Exiled.API.Features;
-using Exiled.Events.EventArgs.Player;
-using Exiled.Events.EventArgs.Server;
-using HintServiceMeow.Core.Utilities;
+﻿using HintServiceMeow.Core.Utilities;
+using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Arguments.ServerEvents;
+using LabApi.Features.Wrappers;
 using PlayerRoles;
 using System.Collections.Generic;
 
@@ -14,17 +13,17 @@ namespace UltimateHUD
 
         public static void RegisterEvents()
         {
-            Exiled.Events.Handlers.Server.RoundEnded += OnRoundEnded;
-            Exiled.Events.Handlers.Player.Died += OnPlayerDied;
-            Exiled.Events.Handlers.Player.ChangingRole += OnChangingRole;
-            Exiled.Events.Handlers.Player.Left += OnLeftPlayer;
+            LabApi.Events.Handlers.ServerEvents.RoundEnded += OnRoundEnded;
+            LabApi.Events.Handlers.PlayerEvents.Death += OnPlayerDied;
+            LabApi.Events.Handlers.PlayerEvents.ChangingRole += OnChangingRole;
+            LabApi.Events.Handlers.PlayerEvents.Left += OnLeftPlayer;
         }
         public static void UnregisterEvents()
         {
-            Exiled.Events.Handlers.Server.RoundEnded -= OnRoundEnded;
-            Exiled.Events.Handlers.Player.Died -= OnPlayerDied;
-            Exiled.Events.Handlers.Player.ChangingRole -= OnChangingRole;
-            Exiled.Events.Handlers.Player.Left -= OnLeftPlayer;
+            LabApi.Events.Handlers.ServerEvents.RoundEnded -= OnRoundEnded;
+            LabApi.Events.Handlers.PlayerEvents.Death -= OnPlayerDied;
+            LabApi.Events.Handlers.PlayerEvents.ChangingRole -= OnChangingRole;
+            LabApi.Events.Handlers.PlayerEvents.Left -= OnLeftPlayer;
             Hints.RemoveAllHints();
         }
 
@@ -34,13 +33,13 @@ namespace UltimateHUD
             playerKills.Clear();
         }
 
-        private static void OnLeftPlayer(LeftEventArgs ev)
+        private static void OnLeftPlayer(PlayerLeftEventArgs ev)
         {
             Hints.RemoveHints(ev.Player);
             playerKills.Remove(ev.Player);
         }
 
-        private static void OnChangingRole(ChangingRoleEventArgs ev)
+        private static void OnChangingRole(PlayerChangingRoleEventArgs ev)
         {
             PlayerDisplay pd = PlayerDisplay.Get(ev.Player);
 
@@ -66,27 +65,8 @@ namespace UltimateHUD
 
 
         // Kill Counter handler
-        private static void OnPlayerDied(DiedEventArgs ev)
+        private static void OnPlayerDied(PlayerDeathEventArgs ev)
         {
-            if (ev.DamageHandler.Type == DamageType.PocketDimension)
-            {
-                foreach (var player in Player.List)
-                {
-                    if (player.Role.Type == RoleTypeId.Scp106)
-                    {
-                        Player killer = player;
-                        if (playerKills.ContainsKey(killer))
-                        {
-                            playerKills[killer]++;
-                        }
-                        else
-                        {
-                            playerKills[killer] = 1;
-                        }
-                    }
-                }
-            }
-
             if (ev.Attacker != null && ev.Attacker != ev.Player)
             {
                 Player killer = ev.Attacker;

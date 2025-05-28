@@ -1,6 +1,4 @@
-﻿using Exiled.API.Features;
-using Exiled.API.Features.Roles;
-using Exiled.CustomRoles.API;
+﻿using LabApi.Features.Wrappers;
 using System.Linq;
 
 namespace UltimateHUD
@@ -24,19 +22,11 @@ namespace UltimateHUD
             return false;
         }
 
-        public static string GetRoleDisplayName(this Translations config, Player player)
+        public static string GetRoleDisplayName(this Config config, Player player)
         {
-            var customRole = player.GetCustomRoles().FirstOrDefault();
+            var normalTranslation = config.GameRoles.FirstOrDefault(r => r.Role == player.Role)?.Name;
 
-            if (customRole != null)
-            {
-                var translation = config.CustomGameRoles.FirstOrDefault(r => r.CustomRole == customRole.Name)?.Name;
-                return translation ?? customRole.Name;
-            }
-
-            var normalTranslation = config.GameRoles.FirstOrDefault(r => r.Role == player.Role.Type)?.Name;
-
-            return normalTranslation ?? player.Role.Type.ToString();
+            return normalTranslation ?? player.Role.ToString();
         }
     }
 }
