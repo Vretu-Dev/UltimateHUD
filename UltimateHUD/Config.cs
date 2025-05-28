@@ -1,4 +1,5 @@
 ﻿using Exiled.API.Interfaces;
+using HintServiceMeow.Core.Enum;
 using System.ComponentModel;
 
 namespace UltimateHUD
@@ -7,6 +8,7 @@ namespace UltimateHUD
     {
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
+        public HintSyncSpeed HintSyncSpeed { get; set; } = HintSyncSpeed.Fast;
 
         [Description("Clock Settings:")]
         public bool EnableClock { get; set; } = true;
