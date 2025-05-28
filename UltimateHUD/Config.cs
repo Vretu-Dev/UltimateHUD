@@ -7,7 +7,6 @@ namespace UltimateHUD
     {
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
-        public int MsRefreshRate { get; set; } = 500;
 
         [Description("Clock Settings:")]
         public bool EnableClock { get; set; } = true;
