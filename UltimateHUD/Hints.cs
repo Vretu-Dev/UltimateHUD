@@ -7,6 +7,7 @@ using Hint = HintServiceMeow.Core.Models.Hints.Hint;
 using UnityEngine;
 using LabApi.Features.Wrappers;
 using PlayerRoles.Spectating;
+using PlayerRoles;
 
 namespace UltimateHUD
 {
@@ -30,7 +31,7 @@ namespace UltimateHUD
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
                         if (!Options.ShouldShow(Plugin.Instance.Config.ClockVisual, p) || !Plugin.Instance.Config.EnableClock)
                             return string.Empty;
-                        string timerColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
+                        string timerColor = "#" + ColorUtility.ToHtmlStringRGB(p.RoleBase.RoleColor);
                         DateTime utc = DateTime.UtcNow.AddHours(Plugin.Instance.Config.TimeZone);
                         return Plugin.Instance.Config.Clock
                             .Replace("{color}", timerColor)
@@ -58,7 +59,7 @@ namespace UltimateHUD
                             return string.Empty;
                         int tps = (int)Server.Tps;
                         int maxTps = (int)Server.MaxTps;
-                        string tpsColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
+                        string tpsColor = "#" + ColorUtility.ToHtmlStringRGB(p.RoleBase.RoleColor);
                         return Plugin.Instance.Config.Tps
                             .Replace("{color}", tpsColor)
                             .Replace("{tps}", tps.ToString())
@@ -84,9 +85,9 @@ namespace UltimateHUD
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
                         if (!Options.ShouldShow(Plugin.Instance.Config.RoundTimeVisual, p) || !Plugin.Instance.Config.EnableRoundTime)
                             return string.Empty;
-                        TimeSpan elapsed = Round.ElapsedTime;
+                        TimeSpan elapsed = Round.Duration;
                         string elapsedFormatted = elapsed.ToString(@"mm\:ss");
-                        string elapsedColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
+                        string elapsedColor = "#" + ColorUtility.ToHtmlStringRGB(p.RoleBase.RoleColor);
                         return Plugin.Instance.Config.RoundTime
                             .Replace("{color}", elapsedColor)
                             .Replace("{round_time}", elapsedFormatted);
@@ -109,15 +110,15 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (p.Role is SpectatorRole)
+                        if (p.RoleBase is SpectatorRole)
                             return string.Empty;
 
-                        string roleColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
+                        string roleColor = "#" + ColorUtility.ToHtmlStringRGB(p.RoleBase.RoleColor);
                         string nickname = p.Nickname;
                         if (nickname.Length > 20)
                             nickname = nickname.Substring(0, 20) + "...";
-                        uint id = (uint)p.Id;
-                        string role = Plugin.Instance.Translation.GetRoleDisplayName(p);
+                        uint id = (uint)p.PlayerId;
+                        string role = Plugin.Instance.Config.GetRoleDisplayName(p);
                         string coloredRole = $"<color={roleColor}>{role}</color>";
                         int kills = EventHandlers.GetKills(p);
 
@@ -145,17 +146,19 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (!(p.Role is SpectatorRole spectatorRole))
+                        if (!(p.RoleBase is SpectatorRole))
                             return string.Empty;
-                        Player observed = spectatorRole.SpectatedPlayer;
+  
+                        Player observed = p.CurrentlySpectating;
                         if (observed == null)
                             return string.Empty;
-                        string observedRoleColor = "#" + ColorUtility.ToHtmlStringRGB(observed.Role.Color);
+
+                        string observedRoleColor = "#" + ColorUtility.ToHtmlStringRGB(observed.RoleBase.RoleColor);
                         string observedNickname = observed.Nickname;
                         if (observedNickname.Length > 14)
                             observedNickname = observedNickname.Substring(0, 14) + "...";
-                        uint observedId = (uint)observed.Id;
-                        string observedRole = Plugin.Instance.Translation.GetRoleDisplayName(observed);
+                        uint observedId = (uint)observed.PlayerId;
+                        string observedRole = Plugin.Instance.Config.GetRoleDisplayName(observed);
                         string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
                         int observedKills = EventHandlers.GetKills(observed);
 
@@ -183,11 +186,12 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (!(p.Role is SpectatorRole))
+                        if (!(p.RoleBase is SpectatorRole))
                             return string.Empty;
+
                         int totalPlayers = Player.List.Count(pl => !pl.IsHost);
-                        int maxPlayers = Server.MaxPlayerCount;
-                        int spectators = Player.List.Count(pl => pl.Role is SpectatorRole && !pl.IsHost);
+                        int maxPlayers = Server.MaxPlayers;
+                        int spectators = Player.List.Count(pl => pl.Role == RoleTypeId.Spectator && !pl.IsHost);
 
                         return Plugin.Instance.Config.SpectatorServerInfo
                             .Replace("{players}", totalPlayers.ToString())
@@ -212,11 +216,11 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        int engaged = Generator.List.Count(g => g.IsEngaged);
+                        int engaged = Generator.List.Count(g => g.Engaged);
                         int maxGenerators = 3;
-                        bool isArmed = Warhead.Status == WarheadStatus.Armed;
-                        string warheadStatus = isArmed ? "Armed" : "Not Armed";
-                        string warheadColor = isArmed ? "red" : "green";
+                        bool isArmed = Warhead.LeverStatus == Warhead.IsLocked;
+                        string warheadStatus = isArmed ? "Not Armed" : "Armed";
+                        string warheadColor = isArmed ? "green" : "red";
                         return Plugin.Instance.Config.SpectatorMapInfo
                             .Replace("{engaged}", engaged.ToString())
                             .Replace("{maxGenerators}", maxGenerators.ToString())

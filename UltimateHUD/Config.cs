@@ -40,6 +40,7 @@ namespace UltimateHUD
         public string SpectatorMapInfo { get; set; } = "<b>Generators:</b> <color=orange>{engaged}/{maxGenerators}</color> <b>| Warhead:</b> <color={warheadColor}>{warheadStatus}</color>";
         public string SpectatorServerInfo { get; set; } = "<b>Players:</b> <color=orange>{players}/{maxPlayers}</color> <b>| Spectators:</b> <color=orange>{spectators}</color>";
 
+        [Description("Role Translations:")]
         public List<RoleName> GameRoles { get; set; } = new List<RoleName>()
         {
             new RoleName { Role = RoleTypeId.Tutorial, Name = "Tutorial" },
