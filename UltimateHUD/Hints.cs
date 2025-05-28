@@ -38,7 +38,7 @@ namespace UltimateHUD
                             .Replace("{time}", utc.ToString("HH:mm"));
                     },
                     FontSize = 25,
-                    YCoordinate = 20,
+                    YCoordinate = Plugin.Instance.Config.ClockYCordinate,
                     XCoordinate = Plugin.Instance.Config.ClockXCordinate,
                     SyncSpeed = Plugin.Instance.Config.HintSyncSpeed
                 };
@@ -66,7 +66,7 @@ namespace UltimateHUD
                             .Replace("{maxTps}", maxTps.ToString());
                     },
                     FontSize = 25,
-                    YCoordinate = 20,
+                    YCoordinate = Plugin.Instance.Config.TpsYCordinate,
                     XCoordinate = Plugin.Instance.Config.TpsXCordinate,
                     SyncSpeed = Plugin.Instance.Config.HintSyncSpeed
                 };
@@ -93,7 +93,7 @@ namespace UltimateHUD
                             .Replace("{round_time}", elapsedFormatted);
                     },
                     FontSize = 25,
-                    YCoordinate = 20,
+                    YCoordinate = Plugin.Instance.Config.RoundTimeYCordinate,
                     XCoordinate = Plugin.Instance.Config.RoundTimeXCordinate,
                     SyncSpeed = Plugin.Instance.Config.HintSyncSpeed
                 };

@@ -19,6 +19,7 @@ namespace UltimateHUD
         [Description("GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay")]
         public string ClockVisual { get; set; } = "BOTH";
         public int ClockXCordinate { get; set; } = -480;
+        public int ClockYCordinate { get; set; } = 20;
 
         [Description("TPS Settings:")]
         public bool EnableTps { get; set; } = true;
@@ -26,6 +27,7 @@ namespace UltimateHUD
         [Description("GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay")]
         public string TpsVisual { get; set; } = "BOTH";
         public int TpsXCordinate { get; set; } = -60;
+        public int TpsYCordinate { get; set; } = 20;
 
         [Description("ROUND TIME Settings:")]
         public bool EnableRoundTime { get; set; } = true;
@@ -33,6 +35,7 @@ namespace UltimateHUD
         [Description("GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay")]
         public string RoundTimeVisual { get; set; } = "BOTH";
         public int RoundTimeXCordinate { get; set; } = 400;
+        public int RoundTimeYCordinate { get; set; } = 20;
 
         [Description("HUD Hints:")]
         public string PlayerHud { get; set; } = "<color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
