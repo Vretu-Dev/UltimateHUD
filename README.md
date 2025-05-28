@@ -1,6 +1,7 @@
 # UltimateHUD
 ### Requirements
 - Exiled 9.6.0 or newest
+- LabAPI 1.0.2 or newest
 - Hint Service Meow [V5.4.0](https://github.com/MeowServer/HintServiceMeow/releases/tag/V5.4.0)
 ### Gameplay
 ![image](https://github.com/user-attachments/assets/8595f42f-7ffe-4443-bb54-b02407b8ac42)
