@@ -6,7 +6,7 @@
 | Framework | Version    |  Release                                                              |
 |:---------:|:----------:|:----------------------------------------------------------------------:|
 | Exiled    | ≥ 9.6.0    | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest)        |
-| LabAPI    | 1.0.2      | [⬇️](https://github.com/JustVretu/UltimateHUD/releases/latest) |
+| LabAPI    | 1.0.2      | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest) |
 
 ## Requirements:
 - Hint Service Meow [V5.4.0](https://github.com/MeowServer/HintServiceMeow/releases/tag/V5.4.0)
