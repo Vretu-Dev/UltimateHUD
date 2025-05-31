@@ -33,21 +33,21 @@ clock: '<color={color}><b>Time:</b> {time}</color>'
 # UTC Time Zone | 2 = UTC+2
 time_zone: 2
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
-clock_visual: 'SPECTATOR'
+clock_visual: 'BOTH'
 clock_x_cordinate: -480
 clock_y_cordinate: 20
 # TPS Settings:
 enable_tps: true
 tps: '<color={color}><b>TPS:</b> {tps}/{maxTps}</color>'
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
-tps_visual: 'SPECTATOR'
+tps_visual: 'BOTH'
 tps_x_cordinate: -60
 tps_y_cordinate: 20
 # ROUND TIME Settings:
 enable_round_time: true
 round_time: '<color={color}><b>Round Time:</b> {round_time}</color>'
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
-round_time_visual: 'SPECTATOR'
+round_time_visual: 'BOTH'
 round_time_x_cordinate: 400
 round_time_y_cordinate: 20
 # Player HUD Settings:
