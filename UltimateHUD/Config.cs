@@ -36,10 +36,18 @@ namespace UltimateHUD
         public int RoundTimeXCordinate { get; set; } = 400;
         public int RoundTimeYCordinate { get; set; } = 20;
 
-        [Description("HUD Hints:")]
+        [Description("Player HUD Settings:")]
         public string PlayerHud { get; set; } = "<color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
+        
+        [Description("Spectator HUD Settings:")]
         public string SpectatorHud { get; set; } = "<color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
+        
+        [Description("Spectator HUD Info Settings:")]
         public string SpectatorMapInfo { get; set; } = "<b>Generators:</b> <color=orange>{engaged}/{maxGenerators}</color> <b>| Warhead:</b> <color={warheadColor}>{warheadStatus}</color>";
+        public int MapInfoXCordinate { get; set; } = 650;
+        public int MapInfoYCordinate { get; set; } = 1000;
         public string SpectatorServerInfo { get; set; } = "<b>Players:</b> <color=orange>{players}/{maxPlayers}</color> <b>| Spectators:</b> <color=orange>{spectators}</color>";
+        public int ServerInfoXCordinate { get; set; } = -500;
+        public int ServerInfoYCordinate { get; set; } = 1000;
     }
 }

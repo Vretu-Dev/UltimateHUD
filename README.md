@@ -14,7 +14,7 @@
 ```yaml
 is_enabled: true
 debug: false
-ms_refresh_rate: 500
+hint_sync_speed: Fast
 # Clock Settings:
 enable_clock: true
 clock: '<color={color}><b>Time:</b> {time}</color>'
@@ -23,21 +23,31 @@ time_zone: 2
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
 clock_visual: 'BOTH'
 clock_x_cordinate: -480
+clock_y_cordinate: 20
 # TPS Settings:
 enable_tps: true
 tps: '<color={color}><b>TPS:</b> {tps}/{maxTps}</color>'
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
 tps_visual: 'BOTH'
 tps_x_cordinate: -60
+tps_y_cordinate: 20
 # ROUND TIME Settings:
 enable_round_time: true
 round_time: '<color={color}><b>Round Time:</b> {round_time}</color>'
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
 round_time_visual: 'BOTH'
 round_time_x_cordinate: 400
-# HUD Hints:
+round_time_y_cordinate: 20
+# Player HUD Settings:
 player_hud: '<color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>'
+# Spectator HUD Settings:
 spectator_hud: '<color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>'
+# Spectator HUD Info Settings:
 spectator_map_info: '<b>Generators:</b> <color=orange>{engaged}/{maxGenerators}</color> <b>| Warhead:</b> <color={warheadColor}>{warheadStatus}</color>'
+map_info_x_cordinate: 650
+map_info_y_cordinate: 1000
 spectator_server_info: '<b>Players:</b> <color=orange>{players}/{maxPlayers}</color> <b>| Spectators:</b> <color=orange>{spectators}</color>'
+server_info_x_cordinate: -500
+server_info_y_cordinate: 1000
+
 ```

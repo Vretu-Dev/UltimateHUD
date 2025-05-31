@@ -29,10 +29,16 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (!Options.ShouldShow(Plugin.Instance.Config.ClockVisual, p) || !Plugin.Instance.Config.EnableClock)
+
+                        if (!Options.ShouldShow(Plugin.Instance.Config.ClockVisual, p)
+                        || !Plugin.Instance.Config.EnableClock
+                        || (p.SessionVariables.TryGetValue("ShowClock", out var showClock) && showClock is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
                             return string.Empty;
+
                         string timerColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
                         DateTime utc = DateTime.UtcNow.AddHours(Plugin.Instance.Config.TimeZone);
+
                         return Plugin.Instance.Config.Clock
                             .Replace("{color}", timerColor)
                             .Replace("{time}", utc.ToString("HH:mm"));
@@ -55,11 +61,16 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (!Options.ShouldShow(Plugin.Instance.Config.TpsVisual, p) || !Plugin.Instance.Config.EnableTps)
+                        if (!Options.ShouldShow(Plugin.Instance.Config.TpsVisual, p)
+                        || !Plugin.Instance.Config.EnableTps
+                        || (p.SessionVariables.TryGetValue("ShowTps", out var showTps) && showTps is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
                             return string.Empty;
+
                         int tps = (int)Server.Tps;
                         int maxTps = (int)Server.MaxTps;
                         string tpsColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
+
                         return Plugin.Instance.Config.Tps
                             .Replace("{color}", tpsColor)
                             .Replace("{tps}", tps.ToString())
@@ -83,11 +94,16 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (!Options.ShouldShow(Plugin.Instance.Config.RoundTimeVisual, p) || !Plugin.Instance.Config.EnableRoundTime)
+                        if (!Options.ShouldShow(Plugin.Instance.Config.RoundTimeVisual, p)
+                        || !Plugin.Instance.Config.EnableRoundTime
+                        || (p.SessionVariables.TryGetValue("ShowRoundTime", out var showRoundTime) && showRoundTime is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
                             return string.Empty;
+
                         TimeSpan elapsed = Round.ElapsedTime;
                         string elapsedFormatted = elapsed.ToString(@"mm\:ss");
                         string elapsedColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
+
                         return Plugin.Instance.Config.RoundTime
                             .Replace("{color}", elapsedColor)
                             .Replace("{round_time}", elapsedFormatted);
@@ -110,7 +126,10 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (p.Role is SpectatorRole)
+
+                        if (p.Role is SpectatorRole
+                        || (p.SessionVariables.TryGetValue("ShowPlayerHUD", out var showPlayerHUD) && showPlayerHUD is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
                             return string.Empty;
 
                         string roleColor = "#" + ColorUtility.ToHtmlStringRGB(p.Role.Color);
@@ -146,15 +165,23 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (!(p.Role is SpectatorRole spectatorRole))
+
+                        if (!(p.Role is SpectatorRole spectatorRole)
+                        || (p.SessionVariables.TryGetValue("ShowSpectatorHUD", out var showSpectatorHUD) && showSpectatorHUD is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
                             return string.Empty;
+
                         Player observed = spectatorRole.SpectatedPlayer;
+
                         if (observed == null)
                             return string.Empty;
+
                         string observedRoleColor = "#" + ColorUtility.ToHtmlStringRGB(observed.Role.Color);
                         string observedNickname = observed.Nickname;
-                        if (observedNickname.Length > 14)
-                            observedNickname = observedNickname.Substring(0, 14) + "...";
+
+                        if (observedNickname.Length > 16)
+                            observedNickname = observedNickname.Substring(0, 16) + "...";
+
                         uint observedId = (uint)observed.Id;
                         string observedRole = Plugin.Instance.Translation.GetRoleDisplayName(observed);
                         string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
@@ -184,8 +211,12 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-                        if (!(p.Role is SpectatorRole))
+
+                        if (!(p.Role is SpectatorRole)
+                        || (p.SessionVariables.TryGetValue("ShowSpectatorHUD", out var showSpectatorHUD) && showSpectatorHUD is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
                             return string.Empty;
+
                         int totalPlayers = Player.List.Count(pl => !pl.IsHost);
                         int maxPlayers = Server.MaxPlayerCount;
                         int spectators = Player.List.Count(pl => pl.Role is SpectatorRole && !pl.IsHost);
@@ -196,8 +227,8 @@ namespace UltimateHUD
                             .Replace("{spectators}", spectators.ToString());
                     },
                     FontSize = 27,
-                    YCoordinate = 1000,
-                    Alignment = HintAlignment.Left,
+                    YCoordinate = Plugin.Instance.Config.ServerInfoYCordinate,
+                    XCoordinate = Plugin.Instance.Config.ServerInfoXCordinate,
                     SyncSpeed = Plugin.Instance.Config.HintSyncSpeed
                 };
                 serverInfoHints[player] = hint;
@@ -213,11 +244,18 @@ namespace UltimateHUD
                     AutoText = arg =>
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
+
+                        if (!(p.Role is SpectatorRole)
+                        || (p.SessionVariables.TryGetValue("ShowSpectatorHUD", out var showSpectatorHUD) && showSpectatorHUD is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
+                            return string.Empty;
+
                         int engaged = Generator.List.Count(g => g.IsEngaged);
                         int maxGenerators = 3;
                         bool isArmed = Warhead.Status == WarheadStatus.Armed;
                         string warheadStatus = isArmed ? "Armed" : "Not Armed";
                         string warheadColor = isArmed ? "red" : "green";
+
                         return Plugin.Instance.Config.SpectatorMapInfo
                             .Replace("{engaged}", engaged.ToString())
                             .Replace("{maxGenerators}", maxGenerators.ToString())
@@ -225,8 +263,8 @@ namespace UltimateHUD
                             .Replace("{warheadStatus}", warheadStatus);
                     },
                     FontSize = 27,
-                    YCoordinate = 1000,
-                    Alignment = HintAlignment.Right,
+                    YCoordinate = Plugin.Instance.Config.MapInfoYCordinate,
+                    XCoordinate = Plugin.Instance.Config.MapInfoXCordinate,
                     SyncSpeed = Plugin.Instance.Config.HintSyncSpeed
                 };
                 mapInfoHints[player] = hint;
