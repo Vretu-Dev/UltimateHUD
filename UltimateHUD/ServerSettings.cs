@@ -155,7 +155,7 @@ namespace UltimateHUD
                 SettingBase.Unregister(settings: new[] { PlayerHUD });
 
             if (SpectatorList != null)
-                SettingBase.Unregister(settings: new[] { PlayerHUD });
+                SettingBase.Unregister(settings: new[] { SpectatorList });
 
             if (SpectatorHUD != null)
                 SettingBase.Unregister(settings: new[] { SpectatorHUD });
