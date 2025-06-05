@@ -26,7 +26,6 @@
 ```yaml
 is_enabled: true
 debug: false
-hint_sync_speed: Fast
 # Clock Settings:
 enable_clock: true
 clock: '<color={color}><b>Time:</b> {time}</color>'
@@ -51,13 +50,25 @@ round_time_visual: 'BOTH'
 round_time_x_cordinate: 400
 round_time_y_cordinate: 20
 # Player HUD Settings:
+enable_player_hud: true
 player_hud: '<color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>'
+# Spectator List:
+enable_spectator_list: true
+spectator_list_header: "<color={color}>\U0001F465 Spectators ({count})</color>"
+spectator_list_players: '<color={color}>• {nickname}</color>'
+hidden_for_roles:
+- Overwatch
+spectator_list_y_cordinate: 100
 # Spectator HUD Settings:
+enable_spectator_hud: true
 spectator_hud: '<color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>'
-# Spectator HUD Info Settings:
+# Spectator Map Info:
+enable_spectator_map_info: true
 spectator_map_info: '<b>Generators:</b> <color=orange>{engaged}/{maxGenerators}</color> <b>| Warhead:</b> <color={warheadColor}>{warheadStatus}</color>'
 map_info_x_cordinate: 650
 map_info_y_cordinate: 1000
+# Spectator Server Info:
+enable_spectator_server_info: true
 spectator_server_info: '<b>Players:</b> <color=orange>{players}/{maxPlayers}</color> <b>| Spectators:</b> <color=orange>{spectators}</color>'
 server_info_x_cordinate: -500
 server_info_y_cordinate: 1000
