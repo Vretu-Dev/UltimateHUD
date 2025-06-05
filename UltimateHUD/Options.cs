@@ -2,6 +2,7 @@
 using PlayerRoles;
 using PlayerRoles.Spectating;
 using System.Linq;
+using UnityEngine;
 
 namespace UltimateHUD
 {
@@ -29,6 +30,11 @@ namespace UltimateHUD
             var normalTranslation = config.GameRoles.FirstOrDefault(r => r.Role == player.Role)?.Name;
 
             return normalTranslation ?? player.Role.ToString();
+        }
+
+        public static string GetRoleColor(Player player)
+        {
+            return "#" + ColorUtility.ToHtmlStringRGB(player.RoleBase.RoleColor);
         }
     }
 }

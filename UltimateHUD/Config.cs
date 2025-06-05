@@ -9,7 +9,6 @@ namespace UltimateHUD
     {
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
-        public HintSyncSpeed HintSyncSpeed { get; set; } = HintSyncSpeed.Fast;
 
         [Description("Clock Settings:")]
         public bool EnableClock { get; set; } = true;
@@ -37,11 +36,32 @@ namespace UltimateHUD
         public int RoundTimeXCordinate { get; set; } = 400;
         public int RoundTimeYCordinate { get; set; } = 20;
 
-        [Description("HUD Hints:")]
+        [Description("Player HUD Settings:")]
+        public bool EnablePlayerHud { get; set; } = true;
         public string PlayerHud { get; set; } = "<color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
+
+        [Description("Spectator List:")]
+        public bool EnableSpectatorList { get; set; } = true;
+        public string SpectatorListHeader { get; set; } = "<color={color}>👥 Spectators ({count})</color>";
+        public string SpectatorListPlayers { get; set; } = "<color={color}>• {nickname}</color>";
+        public List<RoleTypeId> HiddenForRoles { get; set; } = [RoleTypeId.Overwatch];
+        public int SpectatorListYCordinate { get; set; } = 100;
+
+        [Description("Spectator HUD Settings:")]
+        public bool EnableSpectatorHud { get; set; } = true;
         public string SpectatorHud { get; set; } = "<color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
+
+        [Description("Spectator Map Info:")]
+        public bool EnableSpectatorMapInfo { get; set; } = true;
         public string SpectatorMapInfo { get; set; } = "<b>Generators:</b> <color=orange>{engaged}/{maxGenerators}</color> <b>| Warhead:</b> <color={warheadColor}>{warheadStatus}</color>";
+        public int MapInfoXCordinate { get; set; } = 650;
+        public int MapInfoYCordinate { get; set; } = 1000;
+
+        [Description("Spectator Server Info:")]
+        public bool EnableSpectatorServerInfo { get; set; } = true;
         public string SpectatorServerInfo { get; set; } = "<b>Players:</b> <color=orange>{players}/{maxPlayers}</color> <b>| Spectators:</b> <color=orange>{spectators}</color>";
+        public int ServerInfoXCordinate { get; set; } = -500;
+        public int ServerInfoYCordinate { get; set; } = 1000;
 
         [Description("Role Translations:")]
         public List<RoleName> GameRoles { get; set; } = new List<RoleName>()
@@ -68,7 +88,6 @@ namespace UltimateHUD
             new RoleName { Role = RoleTypeId.Scp173, Name = "SCP-173" },
             new RoleName { Role = RoleTypeId.Scp939, Name = "SCP-939" },
             new RoleName { Role = RoleTypeId.Scp3114, Name = "SCP-3114" },
-
         };
     }
 }

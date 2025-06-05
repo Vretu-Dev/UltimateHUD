@@ -2,6 +2,7 @@
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Features.Wrappers;
+using MEC;
 using PlayerRoles;
 using System.Collections.Generic;
 
@@ -45,22 +46,9 @@ namespace UltimateHUD
 
             Hints.RemoveHints(ev.Player);
 
-            if (ev.NewRole == RoleTypeId.Spectator)
-            {
-                pd.AddHint(Hints.GetClockHint(ev.Player));
-                pd.AddHint(Hints.GetTpsHint(ev.Player));
-                pd.AddHint(Hints.GetRoundTimeHint(ev.Player));
-                pd.AddHint(Hints.GetSpectatorPlayerInfoHint(ev.Player));
-                pd.AddHint(Hints.GetServerInfoHint(ev.Player));
-                pd.AddHint(Hints.GetMapInfoHint(ev.Player));
-            }
-            else
-            {
-                pd.AddHint(Hints.GetClockHint(ev.Player));
-                pd.AddHint(Hints.GetTpsHint(ev.Player));
-                pd.AddHint(Hints.GetRoundTimeHint(ev.Player));
-                pd.AddHint(Hints.GetPlayerInfoHint(ev.Player));
-            }
+            Timing.CallDelayed(0.01f, () => {
+                Hints.AddHints(ev.Player);
+            });
         }
 
 
