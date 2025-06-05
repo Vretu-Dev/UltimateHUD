@@ -117,7 +117,7 @@ namespace UltimateHUD
                         player.SessionVariables["ShowSpectatorList"] = showSpectatorList;
                     });
 
-                SettingBase.Register(new[] { PlayerHUD });
+                SettingBase.Register(new[] { SpectatorList });
             }
 
             if (Plugin.Instance.Config.EnableSpectatorHud)
@@ -152,6 +152,9 @@ namespace UltimateHUD
                 SettingBase.Unregister(settings: new[] { RoundTime });
 
             if (PlayerHUD != null)
+                SettingBase.Unregister(settings: new[] { PlayerHUD });
+
+            if (SpectatorList != null)
                 SettingBase.Unregister(settings: new[] { PlayerHUD });
 
             if (SpectatorHUD != null)
