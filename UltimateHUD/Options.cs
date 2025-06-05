@@ -2,6 +2,7 @@
 using Exiled.API.Features.Roles;
 using Exiled.CustomRoles.API;
 using System.Linq;
+using UnityEngine;
 
 namespace UltimateHUD
 {
@@ -37,6 +38,11 @@ namespace UltimateHUD
             var normalTranslation = config.GameRoles.FirstOrDefault(r => r.Role == player.Role.Type)?.Name;
 
             return normalTranslation ?? player.Role.Type.ToString();
+        }
+
+        public static string GetRoleColor(Player player)
+        {
+            return "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
         }
     }
 }

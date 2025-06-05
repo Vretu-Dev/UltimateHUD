@@ -3,6 +3,7 @@ using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
 using HintServiceMeow.Core.Utilities;
+using MEC;
 using PlayerRoles;
 using System.Collections.Generic;
 
@@ -46,22 +47,9 @@ namespace UltimateHUD
 
             Hints.RemoveHints(ev.Player);
 
-            if (ev.NewRole == RoleTypeId.Spectator)
-            {
-                pd.AddHint(Hints.GetClockHint(ev.Player));
-                pd.AddHint(Hints.GetTpsHint(ev.Player));
-                pd.AddHint(Hints.GetRoundTimeHint(ev.Player));
-                pd.AddHint(Hints.GetSpectatorPlayerInfoHint(ev.Player));
-                pd.AddHint(Hints.GetServerInfoHint(ev.Player));
-                pd.AddHint(Hints.GetMapInfoHint(ev.Player));
-            }
-            else
-            {
-                pd.AddHint(Hints.GetClockHint(ev.Player));
-                pd.AddHint(Hints.GetTpsHint(ev.Player));
-                pd.AddHint(Hints.GetRoundTimeHint(ev.Player));
-                pd.AddHint(Hints.GetPlayerInfoHint(ev.Player));
-            }
+            Timing.CallDelayed(0.01f, () => {
+                Hints.AddHints(ev.Player);
+            });
         }
 
 
