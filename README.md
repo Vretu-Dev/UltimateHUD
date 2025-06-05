@@ -22,6 +22,9 @@
 - Engage generators count
 - Warhead status
 
+## Credits:
+- Thanks [@NamelessSCP](https://github.com/NamelessSCP) for using the [SpectatorList](https://github.com/NamelessSCP/SpectatorList-SL) idea.<br>
+
 ## Config:
 ```yaml
 is_enabled: true
