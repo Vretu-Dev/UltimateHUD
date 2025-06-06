@@ -10,6 +10,8 @@ using Exiled.API.Enums;
 using UnityEngine;
 using PlayerRoles;
 using System.Text;
+using Exiled.API.Features.Items;
+using HintServiceMeow.Core.Extension;
 
 namespace UltimateHUD
 {
@@ -21,6 +23,7 @@ namespace UltimateHUD
         private static readonly Dictionary<Player, Hint> roundTimeHints = new Dictionary<Player, Hint>();
         private static readonly Dictionary<Player, Hint> playerInfoHints = new Dictionary<Player, Hint>();
         private static readonly Dictionary<Player, Hint> spectatingPlayerHints = new Dictionary<Player, Hint>();
+        private static readonly Dictionary<Player, Hint> ammoHints = new Dictionary<Player, Hint>();
         private static readonly Dictionary<Player, Hint> spectatorPlayerInfoHints = new Dictionary<Player, Hint>();
         private static readonly Dictionary<Player, Hint> serverInfoHints = new Dictionary<Player, Hint>();
         private static readonly Dictionary<Player, Hint> mapInfoHints = new Dictionary<Player, Hint>();
@@ -219,6 +222,46 @@ namespace UltimateHUD
             return hint;
         }
 
+        public static Hint GetAmmoHint(Player player)
+        {
+            if (!ammoHints.TryGetValue(player, out var hint))
+            {
+                hint = new Hint
+                {
+                    AutoText = arg =>
+                    {
+                        var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
+
+                        if (p.CurrentItem is not Firearm firearm)
+                            return string.Empty;
+
+                        string color = Options.GetRoleColor(p);
+                        string weapon = Plugin.Instance.Translation.GetWeaponDisplayName(firearm);
+
+                        string weaponName = Plugin.Instance.Config.WeaponName
+                            .Replace("{color}", color)
+                            .Replace("{weapon}", weapon);
+
+                        string ammoCounter = Plugin.Instance.Config.AmmoCounter
+                            .Replace("{color}", color)
+                            .Replace("{current}", firearm.MagazineAmmo.ToString())
+                            .Replace("{max}", firearm.MaxMagazineAmmo.ToString());
+
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine(weaponName);
+                        sb.AppendLine(ammoCounter);
+
+                        return sb.ToString();
+                    },
+                    FontSize = 28,
+                    YCoordinate = 950,
+                    SyncSpeed = HintSyncSpeed.Fastest
+                };
+                ammoHints[player] = hint;
+            }
+            return hint;
+        }
+
         // Hints for Spectators
         public static Hint GetSpectatorPlayerInfoHint(Player player)
         {
@@ -369,6 +412,9 @@ namespace UltimateHUD
 
                 if (Plugin.Instance.Config.EnableSpectatorList)
                     pd.AddHint(GetSpectatingPlayer(player));
+
+                if (Plugin.Instance.Config.EnableAmmoCounter)
+                    pd.AddHint(GetAmmoHint(player));
             }
         }
 
@@ -381,36 +427,49 @@ namespace UltimateHUD
                 pd.RemoveHint(hint);
                 clockHints.Remove(player);
             }
+
             if (tpsHints.TryGetValue(player, out hint))
             {
                 pd.RemoveHint(hint);
                 tpsHints.Remove(player);
             }
+
             if (roundTimeHints.TryGetValue(player, out hint))
             {
                 pd.RemoveHint(hint);
                 roundTimeHints.Remove(player);
             }
+
             if (playerInfoHints.TryGetValue(player, out hint))
             {
                 pd.RemoveHint(hint);
                 playerInfoHints.Remove(player);
             }
+
             if (spectatingPlayerHints.TryGetValue(player, out hint))
             {
                 pd.RemoveHint(hint);
                 spectatingPlayerHints.Remove(player);
             }
+
+            if (ammoHints.TryGetValue(player, out hint))
+            {
+                pd.RemoveHint(hint);
+                ammoHints.Remove(player);
+            }
+
             if (spectatorPlayerInfoHints.TryGetValue(player, out hint))
             {
                 pd.RemoveHint(hint);
                 spectatorPlayerInfoHints.Remove(player);
             }
+
             if (serverInfoHints.TryGetValue(player, out hint))
             {
                 pd.RemoveHint(hint);
                 serverInfoHints.Remove(player);
             }
+
             if (mapInfoHints.TryGetValue(player, out hint))
             {
                 pd.RemoveHint(hint);

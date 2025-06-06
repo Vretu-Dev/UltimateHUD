@@ -1,4 +1,5 @@
 ﻿using Exiled.API.Features;
+using Exiled.API.Features.Items;
 using Exiled.API.Features.Roles;
 using Exiled.CustomRoles.API;
 using System.Linq;
@@ -38,6 +39,13 @@ namespace UltimateHUD
             var normalTranslation = config.GameRoles.FirstOrDefault(r => r.Role == player.Role.Type)?.Name;
 
             return normalTranslation ?? player.Role.Type.ToString();
+        }
+
+        public static string GetWeaponDisplayName(this Translations config, Firearm firearm)
+        {
+            var weaponTranslation = config.WeaponName.FirstOrDefault(w => w.Weapon == firearm.FirearmType);
+
+            return weaponTranslation?.Name ?? firearm.FirearmType.ToString();
         }
 
         public static string GetRoleColor(Player player)

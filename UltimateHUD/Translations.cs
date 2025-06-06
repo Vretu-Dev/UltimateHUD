@@ -1,4 +1,5 @@
-﻿using Exiled.API.Interfaces;
+﻿using Exiled.API.Enums;
+using Exiled.API.Interfaces;
 using PlayerRoles;
 using System.Collections.Generic;
 
@@ -13,6 +14,12 @@ namespace UltimateHUD
     public class CustomRoleName
     {
         public string CustomRole { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class WeaponName
+    {
+        public FirearmType Weapon { get; set; }
         public string Name { get; set; }
     }
 
@@ -44,6 +51,24 @@ namespace UltimateHUD
             new RoleName { Role = RoleTypeId.Scp3114, Name = "SCP-3114" },
             
         };
+
+        public List<WeaponName> WeaponName { get; set; } = new List<WeaponName>()
+        {
+            new WeaponName { Weapon = FirearmType.Com15, Name = "COM-15" },
+            new WeaponName { Weapon = FirearmType.Com18, Name = "COM-18" },
+            new WeaponName { Weapon = FirearmType.E11SR, Name = "Epsilon" },
+            new WeaponName { Weapon = FirearmType.FSP9, Name = "FSP-9" },
+            new WeaponName { Weapon = FirearmType.Logicer, Name = "Logicer" },
+            new WeaponName { Weapon = FirearmType.Revolver, Name = "Revolver" },
+            new WeaponName { Weapon = FirearmType.AK, Name = "AK" },
+            new WeaponName { Weapon = FirearmType.Shotgun, Name = "Shotgun" },
+            new WeaponName { Weapon = FirearmType.Com45, Name = "COM-45" },
+            new WeaponName { Weapon = FirearmType.ParticleDisruptor, Name = "Particle X3" },
+            new WeaponName { Weapon = FirearmType.FRMG0, Name = "FR-MG-0" },
+            new WeaponName { Weapon = FirearmType.A7, Name = "A7" },
+            new WeaponName { Weapon = FirearmType.Scp127, Name = "SCP-127" }
+        };
+
         public List<CustomRoleName> CustomGameRoles { get; set; } = new List<CustomRoleName>()
         {
             new CustomRoleName { CustomRole = "Serpents Hand Agent", Name = "Serpent Agent" },

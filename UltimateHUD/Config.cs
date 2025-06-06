@@ -1,5 +1,4 @@
 ﻿using Exiled.API.Interfaces;
-using HintServiceMeow.Core.Enum;
 using PlayerRoles;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -47,6 +46,11 @@ namespace UltimateHUD
         public string SpectatorListPlayers { get; set; } = "<color={color}>• {nickname}</color>";
         public List<RoleTypeId> HiddenForRoles { get; set; } = [RoleTypeId.Overwatch];
         public int SpectatorListYCordinate { get; set; } = 100;
+
+        [Description("Ammo Counter:")]
+        public bool EnableAmmoCounter { get; set; } = true;
+        public string WeaponName { get; set; } = "<space=-900><color={color}>{weapon}</color> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
+        public string AmmoCounter { get; set; } = "<space=-900><b><color={color}>{current} / {max}</color></b> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
 
         [Description("Spectator HUD Settings:")]
         public bool EnableSpectatorHud { get; set; } = true;
