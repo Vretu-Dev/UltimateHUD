@@ -18,7 +18,7 @@ namespace UltimateHUD
 
             if (Visual == "both")
                 return true;
-            if (Visual == "gameplay" && !(player.Role is SpectatorRole))
+            if (Visual == "gameplay" && player.Role is not SpectatorRole)
                 return true;
             if (Visual == "spectator" && player.Role is SpectatorRole)
                 return true;

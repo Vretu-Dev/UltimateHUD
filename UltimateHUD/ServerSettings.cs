@@ -129,7 +129,7 @@ namespace UltimateHUD
                     firstOption: "ON",
                     secondOption: "OFF",
                     defaultIsSecond: false,
-                    hintDescription: "Should Spectator List be displayed",
+                    hintDescription: "Should Ammo Counter be displayed",
                     onChanged: (player, setting) =>
                     {
                         var showAmmoCounter = (setting as TwoButtonsSetting)?.IsFirst ?? true;
