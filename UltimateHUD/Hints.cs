@@ -232,7 +232,10 @@ namespace UltimateHUD
                     {
                         var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
 
-                        if (p.CurrentItem is not Firearm firearm)
+                        if (p.Role is SpectatorRole
+                        || p.CurrentItem is not Firearm firearm
+                        || (p.SessionVariables.TryGetValue("ShowAmmoCounter", out var showAmmoCounter) && showAmmoCounter is bool enabled && !enabled)
+                        || (p.SessionVariables.TryGetValue("ShowHUD", out var showHUD) && showHUD is bool display && !display))
                             return string.Empty;
 
                         string color = Options.GetRoleColor(p);

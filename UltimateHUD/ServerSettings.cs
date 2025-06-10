@@ -12,6 +12,7 @@ namespace UltimateHUD
         public static TwoButtonsSetting RoundTime { get; private set; }
         public static TwoButtonsSetting PlayerHUD { get; private set; }
         public static TwoButtonsSetting SpectatorList { get; private set; }
+        public static TwoButtonsSetting AmmoCounter { get; private set; }
         public static TwoButtonsSetting SpectatorHUD { get; private set; }
         public static void RegisterSettings()
         {
@@ -120,10 +121,28 @@ namespace UltimateHUD
                 SettingBase.Register(new[] { SpectatorList });
             }
 
+            if (Plugin.Instance.Config.EnableAmmoCounter)
+            {
+                AmmoCounter = new TwoButtonsSetting(
+                    id: 5560,
+                    label: "Ammo Counter",
+                    firstOption: "ON",
+                    secondOption: "OFF",
+                    defaultIsSecond: false,
+                    hintDescription: "Should Spectator List be displayed",
+                    onChanged: (player, setting) =>
+                    {
+                        var showAmmoCounter = (setting as TwoButtonsSetting)?.IsFirst ?? true;
+                        player.SessionVariables["ShowAmmoCounter"] = showAmmoCounter;
+                    });
+
+                SettingBase.Register(new[] { AmmoCounter });
+            }
+
             if (Plugin.Instance.Config.EnableSpectatorHud)
             {
                 SpectatorHUD = new TwoButtonsSetting(
-                    id: 5560,
+                    id: 5561,
                     label: "Spectator HUD",
                     firstOption: "ON",
                     secondOption: "OFF",
@@ -156,6 +175,9 @@ namespace UltimateHUD
 
             if (SpectatorList != null)
                 SettingBase.Unregister(settings: new[] { SpectatorList });
+
+            if (AmmoCounter != null)
+                SettingBase.Unregister(settings: new[] { AmmoCounter });
 
             if (SpectatorHUD != null)
                 SettingBase.Unregister(settings: new[] { SpectatorHUD });
