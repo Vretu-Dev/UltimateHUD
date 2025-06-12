@@ -248,7 +248,7 @@ namespace UltimateHUD
                         string ammoCounter = Plugin.Instance.Config.AmmoCounter
                             .Replace("{color}", color)
                             .Replace("{current}", firearm.MagazineAmmo.ToString())
-                            .Replace("{max}", firearm.MaxMagazineAmmo.ToString());
+                            .Replace("{max}", (firearm.MaxMagazineAmmo + 1).ToString());
 
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine(weaponName);
@@ -257,7 +257,7 @@ namespace UltimateHUD
                         return sb.ToString();
                     },
                     FontSize = 28,
-                    YCoordinate = 950,
+                    YCoordinate = Plugin.Instance.Config.AmmoCounterYCordinate,
                     SyncSpeed = HintSyncSpeed.Fastest
                 };
                 ammoHints[player] = hint;

@@ -51,6 +51,7 @@ namespace UltimateHUD
         public bool EnableAmmoCounter { get; set; } = true;
         public string WeaponName { get; set; } = "<space=-900><color={color}>{weapon}</color> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
         public string AmmoCounter { get; set; } = "<space=-900><b><color={color}>{current} / {max}</color></b> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt";
+        public int AmmoCounterYCordinate { get; set; } = 950;
 
         [Description("Spectator HUD Settings:")]
         public bool EnableSpectatorHud { get; set; } = true;
