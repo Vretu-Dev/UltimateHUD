@@ -247,8 +247,8 @@ namespace UltimateHUD
 
                         string ammoCounter = Plugin.Instance.Config.AmmoCounter
                             .Replace("{color}", color)
-                            .Replace("{current}", (firearm.MagazineAmmo + 1).ToString())
-                            .Replace("{max}", (firearm.MaxMagazineAmmo + 1).ToString());
+                            .Replace("{current}", firearm.TotalAmmo.ToString())
+                            .Replace("{max}", firearm.TotalMaxAmmo.ToString());
 
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine(weaponName);
