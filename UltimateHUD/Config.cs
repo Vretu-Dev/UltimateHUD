@@ -38,6 +38,7 @@ namespace UltimateHUD
 
         [Description("Player HUD Settings:")]
         public bool EnablePlayerHud { get; set; } = true;
+        [Description("You can use {displayname} instead of {nickname}")]
         public string PlayerHud { get; set; } = "<color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
 
         [Description("Spectator List:")]
@@ -55,6 +56,7 @@ namespace UltimateHUD
 
         [Description("Spectator HUD Settings:")]
         public bool EnableSpectatorHud { get; set; } = true;
+        [Description("You can use {displayname} instead of {nickname}")]
         public string SpectatorHud { get; set; } = "<color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
         
         [Description("Spectator Map Info:")]

@@ -1,7 +1,9 @@
-﻿using Exiled.API.Features;
+﻿using Exiled.API.Enums;
+using Exiled.API.Features;
 using Exiled.API.Features.Items;
 using Exiled.API.Features.Roles;
 using Exiled.CustomRoles.API;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -51,6 +53,26 @@ namespace UltimateHUD
         public static string GetRoleColor(Player player)
         {
             return "#" + ColorUtility.ToHtmlStringRGB(player.Role.Color);
+        }
+
+        public static string GetWarheadStatusName(this Translations config, WarheadStatus status)
+        {
+            foreach (var w in config.WarheadStatuses)
+            {
+                if (w.Status == status)
+                    return w.Name;
+            }
+            return "Unknown";
+        }
+
+        public static string GetWarheadStatusColor(this Translations config, WarheadStatus status)
+        {
+            foreach (var w in config.WarheadStatuses)
+            {
+                if (w.Status == status)
+                    return w.Color;
+            }
+            return "white";
         }
     }
 }

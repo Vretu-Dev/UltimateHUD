@@ -145,8 +145,14 @@ namespace UltimateHUD
 
                         string roleColor = Options.GetRoleColor(p);
                         string nickname = p.Nickname;
+                        string displayname = p.DisplayNickname;
+
                         if (nickname.Length > 20)
                             nickname = nickname.Substring(0, 20) + "...";
+
+                        if (displayname.Length > 20)
+                            displayname = displayname.Substring(0, 20) + "...";
+
                         uint id = (uint)p.Id;
                         string role = Plugin.Instance.Translation.GetRoleDisplayName(p);
                         string coloredRole = $"<color={roleColor}>{role}</color>";
@@ -154,6 +160,7 @@ namespace UltimateHUD
 
                         return Plugin.Instance.Config.PlayerHud
                             .Replace("{nickname}", nickname)
+                            .Replace("{displayname}", displayname)
                             .Replace("{id}", id.ToString())
                             .Replace("{role}", coloredRole)
                             .Replace("{kills}", kills.ToString());
@@ -288,9 +295,13 @@ namespace UltimateHUD
 
                         string observedRoleColor = Options.GetRoleColor(observed);
                         string observedNickname = observed.Nickname;
+                        string observedDisplayname = observed.DisplayNickname;
 
                         if (observedNickname.Length > 16)
                             observedNickname = observedNickname.Substring(0, 16) + "...";
+
+                        if (observedDisplayname.Length > 16)
+                            observedDisplayname = observedDisplayname.Substring(0, 16) + "...";
 
                         uint observedId = (uint)observed.Id;
                         string observedRole = Plugin.Instance.Translation.GetRoleDisplayName(observed);
@@ -299,6 +310,7 @@ namespace UltimateHUD
 
                         return Plugin.Instance.Config.SpectatorHud
                             .Replace("{nickname}", observedNickname)
+                            .Replace("{displayname}", observedDisplayname)
                             .Replace("{id}", observedId.ToString())
                             .Replace("{role}", coloredObservedRole)
                             .Replace("{kills}", observedKills.ToString());
@@ -364,9 +376,8 @@ namespace UltimateHUD
 
                         int engaged = Generator.List.Count(g => g.IsEngaged);
                         int maxGenerators = 3;
-                        bool isArmed = Warhead.Status == WarheadStatus.Armed;
-                        string warheadStatus = isArmed ? "Armed" : "Not Armed";
-                        string warheadColor = isArmed ? "red" : "green";
+                        string warheadStatus = Plugin.Instance.Translation.GetWarheadStatusName(Warhead.Status);
+                        string warheadColor = Plugin.Instance.Translation.GetWarheadStatusColor(Warhead.Status);
 
                         return Plugin.Instance.Config.SpectatorMapInfo
                             .Replace("{engaged}", engaged.ToString())

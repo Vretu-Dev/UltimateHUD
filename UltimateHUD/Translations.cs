@@ -23,8 +23,22 @@ namespace UltimateHUD
         public string Name { get; set; }
     }
 
+    public class WarheadStatusName
+    {
+        public WarheadStatus Status { get; set; }
+        public string Name { get; set; }
+        public string Color { get; set; }
+    }
     public class Translations : ITranslation
     {
+        public List<WarheadStatusName> WarheadStatuses { get; set; } = new List<WarheadStatusName>()
+        {
+            new WarheadStatusName { Status = WarheadStatus.Armed,      Name = "Armed",      Color = "red" },
+            new WarheadStatusName { Status = WarheadStatus.NotArmed,   Name = "Not Armed",  Color = "green" },
+            new WarheadStatusName { Status = WarheadStatus.InProgress, Name = "In Progress",Color = "orange" },
+            new WarheadStatusName { Status = WarheadStatus.Detonated,  Name = "Detonated",  Color = "#8B0000" },
+        };
+
         public List<RoleName> GameRoles { get; set; } = new List<RoleName>()
         {
             new RoleName { Role = RoleTypeId.Tutorial, Name = "Tutorial" },
