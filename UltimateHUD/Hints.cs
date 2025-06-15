@@ -12,6 +12,7 @@ using PlayerRoles;
 using System.Text;
 using Exiled.API.Features.Items;
 using HintServiceMeow.Core.Extension;
+using System.Text.RegularExpressions;
 
 namespace UltimateHUD
 {
@@ -146,6 +147,8 @@ namespace UltimateHUD
                         string roleColor = Options.GetRoleColor(p);
                         string nickname = p.Nickname;
                         string displayname = p.DisplayNickname;
+
+                        displayname = Regex.Replace(displayname, "<color=#855439>\\*</color>$", "");
 
                         if (nickname.Length > 20)
                             nickname = nickname.Substring(0, 20) + "...";
@@ -296,6 +299,8 @@ namespace UltimateHUD
                         string observedRoleColor = Options.GetRoleColor(observed);
                         string observedNickname = observed.Nickname;
                         string observedDisplayname = observed.DisplayNickname;
+
+                        observedDisplayname = Regex.Replace(observedDisplayname, "<color=#855439>\\*</color>$", "");
 
                         if (observedNickname.Length > 16)
                             observedNickname = observedNickname.Substring(0, 16) + "...";
