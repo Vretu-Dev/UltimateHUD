@@ -47,7 +47,7 @@ namespace UltimateHUD
 
             Hints.RemoveHints(ev.Player);
 
-            Timing.CallDelayed(0.05f, () => {
+            Timing.CallDelayed(Plugin.Instance.Config.RefreshTime, () => {
                 Hints.AddHints(ev.Player);
             });
         }

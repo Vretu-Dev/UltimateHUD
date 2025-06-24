@@ -10,6 +10,9 @@ namespace UltimateHUD
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
 
+        [Description("Time after which the hint is refreshed when the player changes roles")]
+        public float RefreshTime { get; set; } = 0.05f;
+
         [Description("Clock Settings:")]
         public bool EnableClock { get; set; } = true;
         public string Clock { get; set; } = "<color={color}><b>Time:</b> {time}</color>";
