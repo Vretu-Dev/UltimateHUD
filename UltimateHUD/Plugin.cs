@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
 
@@ -10,7 +9,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHUD";
-        public override Version Version => new Version(5, 4, 1);
+        public override Version Version => new Version(5, 5, 0);
         public override Version RequiredExiledVersion { get; } = new Version(9, 6, 0);
         public static Plugin Instance { get; private set; }
         public HeaderSetting SettingsHeader { get; set; } = new HeaderSetting("Ultimate HUD");
@@ -20,7 +19,7 @@ namespace UltimateHUD
             Instance = this;
             SettingBase.Register(new[] { SettingsHeader });
             EventHandlers.RegisterEvents();
-            ServerSpecificSettings.RegisterSettings();
+            ServerSettings.RegisterSettings();
             base.OnEnabled();
         }
 
@@ -29,7 +28,7 @@ namespace UltimateHUD
             Instance = null;
             SettingBase.Unregister(settings: new[] { SettingsHeader });
             EventHandlers.UnregisterEvents();
-            ServerSpecificSettings.UnregisterSettings();
+            ServerSettings.UnregisterSettings();
             base.OnDisabled();
         }
     }

@@ -1,10 +1,9 @@
 ﻿using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
-using System.Collections.Generic;
 
 namespace UltimateHUD
 {
-    public static class ServerSpecificSettings
+    public static class ServerSettings
     {
         public static TwoButtonsSetting HUD { get; private set; }
         public static TwoButtonsSetting Clock { get; private set; }
@@ -182,5 +181,15 @@ namespace UltimateHUD
             if (SpectatorHUD != null)
                 SettingBase.Unregister(settings: new[] { SpectatorHUD });
         }
+
+        public static bool ShouldShowHUD(Player player) => !(player.SessionVariables.TryGetValue("ShowHUD", out var value) && value is bool enabled && !enabled);
+        public static bool ShouldShowClock(Player player) => !(player.SessionVariables.TryGetValue("ShowClock", out var value) && value is bool enabled && !enabled);
+        public static bool ShouldShowTps(Player player) => !(player.SessionVariables.TryGetValue("ShowTps", out var value) && value is bool enabled && !enabled);
+        public static bool ShouldShowRoundTime(Player player) => !(player.SessionVariables.TryGetValue("ShowRoundTime", out var value) && value is bool enabled && !enabled);
+        public static bool ShouldShowPlayerHUD(Player player) => !(player.SessionVariables.TryGetValue("ShowPlayerHUD", out var value) && value is bool enabled && !enabled);
+        public static bool ShouldShowSpectatorList(Player player) => !(player.SessionVariables.TryGetValue("ShowSpectatorList", out var value) && value is bool enabled && !enabled);
+        public static bool ShouldShowAmmoCounter(Player player) => !(player.SessionVariables.TryGetValue("ShowAmmoCounter", out var value) && value is bool enabled && !enabled);
+        public static bool ShouldShowSpectatorHUD(Player player) => !(player.SessionVariables.TryGetValue("ShowSpectatorHUD", out var value) && value is bool enabled && !enabled);
+    
     }
 }
