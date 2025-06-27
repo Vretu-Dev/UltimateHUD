@@ -20,6 +20,7 @@ namespace UltimateHUD
             SettingBase.Register(new[] { SettingsHeader });
             EventHandlers.RegisterEvents();
             ServerSettings.RegisterSettings();
+            Hints.RegisterHints();
             base.OnEnabled();
         }
 
@@ -29,6 +30,7 @@ namespace UltimateHUD
             SettingBase.Unregister(settings: new[] { SettingsHeader });
             EventHandlers.UnregisterEvents();
             ServerSettings.UnregisterSettings();
+            Hints.UnregisterHints();
             base.OnDisabled();
         }
     }

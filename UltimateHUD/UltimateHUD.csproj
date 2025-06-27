@@ -37,7 +37,6 @@
     <Reference Include="UnityEngine" HintPath="$(EXILED_REFERENCES)\UnityEngine.dll" Private="false" />
     <Reference Include="UnityEngine.CoreModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
     <Reference Include="UnityEngine.PhysicsModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
-    <Reference Include="HintServiceMeow-Exiled" HintPath="$(EXILED_REFERENCES)\HintServiceMeow-Exiled.dll" Private="false" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -59,10 +58,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ExMod.Exiled">
-      <Version>9.6.0</Version>
+      <Version>9.6.1</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
       <Version>2.3.6</Version>
+    </PackageReference>
+    <PackageReference Include="RueI">
+      <Version>2.1.3</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
