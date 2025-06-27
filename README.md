@@ -9,8 +9,7 @@
 | LabAPI    | 1.0.2      | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest) |
 
 ## Requirements:
-- Hint Service Meow [V5.4.2](https://github.com/MeowServer/HintServiceMeow/releases/tag/V5.4.2)
-- RUEI [V2.1.3](https://github.com/pawslee/RueI/releases/tag/v2.1.3)
+- Hint Service Meow [V5.4.2](https://github.com/MeowServer/HintServiceMeow/releases/tag/V5.4.2) or RUEI [V2.1.3](https://github.com/pawslee/RueI/releases/tag/v2.1.3)
 
 ## Features:
 - Clock
