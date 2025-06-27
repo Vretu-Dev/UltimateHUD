@@ -254,7 +254,7 @@ namespace UltimateHUD
                     .Replace("{role}", coloredObservedRole)
                     .Replace("{kills}", observedKills.ToString());
             },
-            Config.ServerInfoYCordinate
+            Config.SpectatorHudYCordinate
         );
 
         public static AutoElement SpectatorPlayerInfoAuto = new(Roles.Spectator, SpectatorPlayerInfoElement)
