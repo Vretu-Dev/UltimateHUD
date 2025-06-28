@@ -19,12 +19,14 @@ namespace UltimateHUD
         public override void Enable()
         {
             Instance = this;
+            Hints.RegisterHints();
             EventHandlers.RegisterEvents();
         }
 
         public override void Disable()
         {
             Instance = null;
+            Hints.UnregisterHints();
             EventHandlers.UnregisterEvents();
         }
 
