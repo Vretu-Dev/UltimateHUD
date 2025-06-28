@@ -68,6 +68,8 @@ namespace UltimateHUD
         [Description("You can use {displayname} instead of {nickname}")]
         public string SpectatorHud { get; set; } = "<color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>";
         public int SpectatorHudFontSize { get; set; } = 33;
+        [Description("If true, will not show the spectated player's nickname when they are a skeleton (SCP-3114). This mimics the behavior of the base-game spectator UI.")]
+        public bool HideSkeletonNickname { get; set; } = true;
 
         [Description("Spectator Map Info:")]
         public bool EnableSpectatorMapInfo { get; set; } = true;
