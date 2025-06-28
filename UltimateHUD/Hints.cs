@@ -24,7 +24,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (!Options.ShouldShow(Config.ClockVisual, p) || !ServerSettings.ShouldShowClock(p) || !ServerSettings.ShouldShowHUD(p))
+                if (!Options.ShouldShow(Config.ClockVisual, p) || !ServerSettings.ShouldShowClock(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableClock)
                     return string.Empty;
 
                 string timerColor = Options.GetRoleColor(p);
@@ -48,7 +48,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (!Options.ShouldShow(Config.TpsVisual, p) || !ServerSettings.ShouldShowTps(p) || !ServerSettings.ShouldShowHUD(p))
+                if (!Options.ShouldShow(Config.TpsVisual, p) || !ServerSettings.ShouldShowTps(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableTps)
                     return string.Empty;
 
                 int tps = (int)Server.Tps;
@@ -74,7 +74,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (!Options.ShouldShow(Config.RoundTimeVisual, p) || !ServerSettings.ShouldShowRoundTime(p) || !ServerSettings.ShouldShowHUD(p))
+                if (!Options.ShouldShow(Config.RoundTimeVisual, p) || !ServerSettings.ShouldShowRoundTime(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableRoundTime)
                     return string.Empty;
 
                 TimeSpan elapsed = Round.ElapsedTime;
@@ -100,7 +100,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is SpectatorRole || !ServerSettings.ShouldShowPlayerHUD(p) || !ServerSettings.ShouldShowHUD(p))
+                if (p.Role is SpectatorRole || !ServerSettings.ShouldShowPlayerHUD(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnablePlayerHud)
                     return string.Empty;
 
                 string roleColor = Options.GetRoleColor(p);
@@ -141,7 +141,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is SpectatorRole || p.CurrentItem is not Firearm firearm || !ServerSettings.ShouldShowAmmoCounter(p) || !ServerSettings.ShouldShowHUD(p))
+                if (p.Role is SpectatorRole || p.CurrentItem is not Firearm firearm || !ServerSettings.ShouldShowAmmoCounter(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableAmmoCounter)
                     return string.Empty;
 
                 string color = Options.GetRoleColor(p);
@@ -176,7 +176,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is SpectatorRole || Config.HiddenForRoles.Contains(p.Role.Type) || !ServerSettings.ShouldShowSpectatorList(p) || !ServerSettings.ShouldShowHUD(p))
+                if (p.Role is SpectatorRole || Config.HiddenForRoles.Contains(p.Role.Type) || !ServerSettings.ShouldShowSpectatorList(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableSpectatorList)
                     return string.Empty;
 
                 var spectators = p.CurrentSpectatingPlayers
@@ -222,7 +222,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is not SpectatorRole spectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p))
+                if (p.Role is not SpectatorRole spectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableSpectatorHud)
                     return string.Empty;
 
                 Player observed = spectatorRole.SpectatedPlayer;
@@ -271,7 +271,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p))
+                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p)|| Config.EnableSpectatorServerInfo)
                     return string.Empty;
 
                 int totalPlayers = Player.List.Count(pl => !pl.IsHost);
@@ -297,7 +297,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p))
+                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableSpectatorMapInfo)
                     return string.Empty;
 
                 int engaged = Generator.List.Count(g => g.IsEngaged);
