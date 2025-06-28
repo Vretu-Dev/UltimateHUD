@@ -247,6 +247,9 @@ namespace UltimateHUD
                 string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
                 int observedKills = EventHandlers.GetKills(observed);
 
+                if (Config.HideSkeletonNickname && observed.Role.Type == RoleTypeId.Scp3114)
+                            observedNickname = observedRole;
+
                 return Config.SpectatorHud
                     .Replace("{nickname}", observedNickname)
                     .Replace("{displayname}", observedDisplayname)
