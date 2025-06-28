@@ -10,6 +10,7 @@ namespace UltimateHUD
 {
     public static class EventHandlers
     {
+        private static Config Config => Plugin.Instance.Config;
         private static readonly Dictionary<Player, int> playerKills = new Dictionary<Player, int>();
 
         public static void RegisterEvents()
@@ -46,7 +47,7 @@ namespace UltimateHUD
 
             Hints.RemoveHints(ev.Player);
 
-            Timing.CallDelayed(0.01f, () => {
+            Timing.CallDelayed(Config.RefreshTime, () => {
                 Hints.AddHints(ev.Player);
             });
         }
