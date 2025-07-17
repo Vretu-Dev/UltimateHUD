@@ -139,6 +139,9 @@ namespace UltimateHUD
         {
             if (!playerInfoHints.TryGetValue(player, out var hint))
             {
+                if (player.Role is SpectatorRole || !ServerSettings.ShouldShowPlayerHUD(player) || !ServerSettings.ShouldShowHUD(player))
+                    return null;
+
                 string roleColor = Options.GetRoleColor(player);
                 string nickname = player.Nickname;
                 string displayname = player.DisplayNickname;
@@ -156,21 +159,22 @@ namespace UltimateHUD
                 string coloredRole = $"<color={roleColor}>{role}</color>";
                 int kills = EventHandlers.GetKills(player);
 
-                hint = new Hint
-                {
-                    Text = Plugin.Instance.Config.PlayerHud
+                string infoText = Config.PlayerHud
                         .Replace("{nickname}", nickname)
                         .Replace("{displayname}", displayname)
                         .Replace("{id}", id.ToString())
                         .Replace("{role}", coloredRole)
-                        .Replace("{kills}", kills.ToString()),
+                        .Replace("{kills}", kills.ToString());
 
-                    FontSize = Plugin.Instance.Config.PlayerHudFontSize,
-                    YCoordinate = 1050,
-                    Alignment = HintAlignment.Center
-                };
+               hint = new Hint
+               {
+                   Text = infoText,
+                   FontSize = Config.PlayerHudFontSize,
+                   YCoordinate = 1050,
+                   Alignment = HintAlignment.Center
+               };
 
-                playerInfoHints[player] = hint;
+               playerInfoHints[player] = hint;
             }
 
             return hint;
@@ -231,13 +235,13 @@ namespace UltimateHUD
                     return null;
 
                 string color = Options.GetRoleColor(player);
-                string weapon = Plugin.Instance.Translation.GetWeaponDisplayName(firearm);
+                string weapon = Translation.GetWeaponDisplayName(firearm);
 
-                string weaponName = Plugin.Instance.Config.WeaponName
+                string weaponName = Config.WeaponName
                     .Replace("{color}", color)
                     .Replace("{weapon}", weapon);
 
-                string ammoCounter = Plugin.Instance.Config.AmmoCounter
+                string ammoCounter = Config.AmmoCounter
                     .Replace("{color}", color)
                     .Replace("{current}", firearm.TotalAmmo.ToString())
                     .Replace("{max}", firearm.TotalMaxAmmo.ToString());
@@ -249,8 +253,8 @@ namespace UltimateHUD
                 hint = new Hint
                 {
                     Text = sb.ToString(),
-                    FontSize = Plugin.Instance.Config.AmmoCounterFontSize,
-                    YCoordinate = Plugin.Instance.Config.AmmoCounterYCordinate
+                    FontSize = Config.AmmoCounterFontSize,
+                    YCoordinate = Config.AmmoCounterYCordinate
                 };
 
                 ammoHints[player] = hint;
