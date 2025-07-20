@@ -16,6 +16,12 @@ namespace UltimateHUD
     {
         private static Config Config => Plugin.Instance.Config;
         private static Translations Translation => Plugin.Instance.Translation;
+        private static readonly IElemReference<DynamicElement> PlayerInfoRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> AmmoRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> SpectatingPlayersRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> SpectatorPlayerInfoRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> ServerInfoRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> MapInfoRef = DisplayCore.GetReference<DynamicElement>();
 
         // Hints for Everyone
         // Clock Hint
@@ -130,11 +136,6 @@ namespace UltimateHUD
             Config.PlayerHudYCordinate
         );
 
-        public static AutoElement PlayerInfoAuto = new(Roles.Alive, PlayerInfoElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(1))
-        };
-
         // Ammo Counter
         public static DynamicElement AmmoElement = new(
             core =>
@@ -164,11 +165,6 @@ namespace UltimateHUD
             },
             Config.AmmoCounterYCordinate
         );
-
-        public static AutoElement AmmoAuto = new(Roles.Alive, AmmoElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(0.05))
-        };
 
         // Spectator Players List
         public static DynamicElement SpectatingPlayersElement = new(
@@ -209,11 +205,6 @@ namespace UltimateHUD
             },
             Config.SpectatorListYCordinate
         );
-
-        public static AutoElement SpectatingPlayersAuto = new(Roles.Alive, SpectatingPlayersElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(1))
-        };
 
         // Hints for Spectators
         // Spectator HUD
@@ -260,11 +251,6 @@ namespace UltimateHUD
             Config.SpectatorHudYCordinate
         );
 
-        public static AutoElement SpectatorPlayerInfoAuto = new(Roles.Spectator, SpectatorPlayerInfoElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(1))
-        };
-
         // Server Info
         public static DynamicElement ServerInfoElement = new(
             core =>
@@ -285,11 +271,6 @@ namespace UltimateHUD
             },
             Config.ServerInfoYCordinate
         );
-
-        public static AutoElement ServerInfoAuto = new(Roles.Spectator, ServerInfoElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(2))
-        };
 
         // Map Info
         public static DynamicElement MapInfoElement = new(
@@ -314,10 +295,12 @@ namespace UltimateHUD
             Config.MapInfoYCordinate
         );
 
-        public static AutoElement MapInfoAuto = new(Roles.Spectator, MapInfoElement)
+        public static void RefreshPlayerInfoHint(ReferenceHub hub)
         {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(2))
-        };
+            var core = DisplayCore.Get(hub);
+            core.AddAsReference(PlayerInfoRef, PlayerInfoElement);
+            core.Update();
+        }
 
         public static void RegisterHints()
         {
@@ -329,12 +312,61 @@ namespace UltimateHUD
             ClockAuto.Disable();
             TpsAuto.Disable();
             RoundTimeAuto.Disable();
-            PlayerInfoAuto.Disable();
-            SpectatorPlayerInfoAuto.Disable();
-            ServerInfoAuto.Disable();
-            MapInfoAuto.Disable();
-            SpectatingPlayersAuto.Disable();
-            AmmoAuto.Disable();
+
+            foreach (var player in Player.List)
+                RemoveAllHints(player.ReferenceHub);
         }
+
+        public static void RefreshHint(ReferenceHub hub, IElemReference<DynamicElement> hintRef, DynamicElement element)
+        {
+            var core = DisplayCore.Get(hub);
+            core.AddAsReference(hintRef, element);
+            core.Update();
+        }
+
+        public static void RemoveHint(ReferenceHub hub, IElemReference<DynamicElement> hintRef)
+        {
+            var core = DisplayCore.Get(hub);
+            core.RemoveReference(hintRef);
+            core.Update();
+        }
+
+        public static void RefreshAllHints(ReferenceHub hub)
+        {
+            RefreshPlayerInfo(hub);
+            RefreshAmmo(hub);
+            RefreshSpectatingPlayers(hub);
+            RefreshSpectatorPlayerInfo(hub);
+            RefreshServerInfo(hub);
+            RefreshMapInfo(hub);
+        }
+
+        public static void RemoveAllHints(ReferenceHub hub)
+        {
+            RemovePlayerInfo(hub);
+            RemoveAmmo(hub);
+            RemoveSpectatingPlayers(hub);
+            RemoveSpectatorPlayerInfo(hub);
+            RemoveServerInfo(hub);
+            RemoveMapInfo(hub);
+        }
+
+        public static void RefreshPlayerInfo(ReferenceHub hub) => RefreshHint(hub, PlayerInfoRef, PlayerInfoElement);
+        public static void RemovePlayerInfo(ReferenceHub hub) => RemoveHint(hub, PlayerInfoRef);
+
+        public static void RefreshAmmo(ReferenceHub hub) => RefreshHint(hub, AmmoRef, AmmoElement);
+        public static void RemoveAmmo(ReferenceHub hub) => RemoveHint(hub, AmmoRef);
+
+        public static void RefreshSpectatingPlayers(ReferenceHub hub) => RefreshHint(hub, SpectatingPlayersRef, SpectatingPlayersElement);
+        public static void RemoveSpectatingPlayers(ReferenceHub hub) => RemoveHint(hub, SpectatingPlayersRef);
+
+        public static void RefreshSpectatorPlayerInfo(ReferenceHub hub) => RefreshHint(hub, SpectatorPlayerInfoRef, SpectatorPlayerInfoElement);
+        public static void RemoveSpectatorPlayerInfo(ReferenceHub hub) => RemoveHint(hub, SpectatorPlayerInfoRef);
+
+        public static void RefreshServerInfo(ReferenceHub hub) => RefreshHint(hub, ServerInfoRef, ServerInfoElement);
+        public static void RemoveServerInfo(ReferenceHub hub) => RemoveHint(hub, ServerInfoRef);
+
+        public static void RefreshMapInfo(ReferenceHub hub) => RefreshHint(hub, MapInfoRef, MapInfoElement);
+        public static void RemoveMapInfo(ReferenceHub hub) => RemoveHint(hub, MapInfoRef);
     }
 }
