@@ -31,7 +31,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Player.UnloadedWeapon += OnPlayerUnloaded;
             Exiled.Events.Handlers.Player.ChangedItem += OnChangedItem;
             Exiled.Events.Handlers.Warhead.ChangingLeverStatus += OnChangingLeverStatus;
-            Exiled.Events.Handlers.Warhead.Detonating += OnDetonated;
+            Exiled.Events.Handlers.Warhead.Detonated += OnDetonated;
             Exiled.Events.Handlers.Warhead.Starting += OnStarting;
             Exiled.Events.Handlers.Warhead.Stopping += OnStopping;
             Exiled.Events.Handlers.Map.GeneratorActivating += OnGeneratorActivating;
@@ -50,7 +50,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Player.UnloadedWeapon -= OnPlayerUnloaded;
             Exiled.Events.Handlers.Player.ChangedItem -= OnChangedItem;
             Exiled.Events.Handlers.Warhead.ChangingLeverStatus -= OnChangingLeverStatus;
-            Exiled.Events.Handlers.Warhead.Detonating -= OnDetonated;
+            Exiled.Events.Handlers.Warhead.Detonated -= OnDetonated;
             Exiled.Events.Handlers.Warhead.Starting -= OnStarting;
             Exiled.Events.Handlers.Warhead.Stopping -= OnStopping;
             Exiled.Events.Handlers.Map.GeneratorActivating -= OnGeneratorActivating;
@@ -87,6 +87,7 @@ namespace UltimateHUD
         private static void OnLeftPlayer(LeftEventArgs ev)
         {
             Hints.RemoveHints(ev.Player);
+
             playerKills.Remove(ev.Player);
 
             foreach (var spectator in Player.List.Where(p => p.Role is SpectatorRole))
@@ -102,8 +103,6 @@ namespace UltimateHUD
         /// <param name="ev"></param>
         private static void OnChangingRole(ChangingRoleEventArgs ev)
         {
-            PlayerDisplay pd = PlayerDisplay.Get(ev.Player);
-
             Hints.RemoveHints(ev.Player);
 
             Timing.CallDelayed(0.1f, () =>
@@ -143,7 +142,6 @@ namespace UltimateHUD
 
                         Hints.RemovePlayerInfoHint(killer);
                         Hints.AddPlayerInfoHint(killer);
-
                     }
                 }
             }
@@ -164,6 +162,7 @@ namespace UltimateHUD
             foreach (var spectator in Player.List.Where(p => p.Role is SpectatorRole))
             {
                 var spectated = ((SpectatorRole)spectator.Role).SpectatedPlayer;
+
                 if (spectated != null && spectated == ev.Attacker)
                 {
                     Hints.RemoveSpectatorPlayerInfoHint(spectator);
@@ -288,16 +287,13 @@ namespace UltimateHUD
         /// Refreshes the map info hint for spectators when the warhead is detonated.
         /// </summary>
         /// <param name="ev"></param>
-        private static void OnDetonated(DetonatingEventArgs ev)
+        private static void OnDetonated()
         {
-            Timing.CallDelayed(0.1f, () =>
+            foreach (var spectator in Player.List.Where(p => p.Role is SpectatorRole))
             {
-                foreach (var spectator in Player.List.Where(p => p.Role is SpectatorRole))
-                {
-                    Hints.RemoveMapInfoHint(spectator);
-                    Hints.AddMapInfoHint(spectator);
-                }
-            });
+                Hints.RemoveMapInfoHint(spectator);
+                Hints.AddMapInfoHint(spectator);
+            }
         }
 
         /// <summary>

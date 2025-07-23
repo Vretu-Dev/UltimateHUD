@@ -381,57 +381,22 @@ namespace UltimateHUD
 
         public static void AddHints(Player player)
         {
-            PlayerDisplay pd = PlayerDisplay.Get(player);
-
-            if (Config.EnableClock)
-                pd.AddHint(GetClockHint(player));
-
-            if (Config.EnableTps)
-                pd.AddHint(GetTpsHint(player));
-
-            if (Config.EnableRoundTime)
-                pd.AddHint(GetRoundTimeHint(player));
-
-            if (player.Role is SpectatorRole)
-            {
-                if(Config.EnableSpectatorHud)
-                    pd.AddHint(GetSpectatorPlayerInfoHint(player));
-
-                if (Config.EnableSpectatorServerInfo)
-                    pd.AddHint(GetServerInfoHint(player));
-
-                if (Config.EnableSpectatorMapInfo)
-                    pd.AddHint(GetMapInfoHint(player));
-            }
-            else
-            {
-                if (Config.EnablePlayerHud)
-                    pd.AddHint(GetPlayerInfoHint(player));
-            }
+            AddClockHint(player);
+            AddTpsHint(player);
+            AddRoundTimeHint(player);
+            AddPlayerInfoHint(player);
+            AddSpectatingPlayerHint(player);
+            AddAmmoHint(player);
+            AddSpectatorPlayerInfoHint(player);
+            AddServerInfoHint(player);
+            AddMapInfoHint(player);
         }
 
         public static void RemoveHints(Player player)
         {
-            PlayerDisplay pd = PlayerDisplay.Get(player);
-
-            if (clockHints.TryGetValue(player, out var hint))
-            {
-                pd.RemoveHint(hint);
-                clockHints.Remove(player);
-            }
-
-            if (tpsHints.TryGetValue(player, out hint))
-            {
-                pd.RemoveHint(hint);
-                tpsHints.Remove(player);
-            }
-
-            if (roundTimeHints.TryGetValue(player, out hint))
-            {
-                pd.RemoveHint(hint);
-                roundTimeHints.Remove(player);
-            }
-
+            RemoveClockHint(player);
+            RemoveTpsHint(player);
+            RemoveRoundTimeHint(player);
             RemovePlayerInfoHint(player);
             RemoveSpectatingPlayerHint(player);
             RemoveAmmoHint(player);
@@ -446,6 +411,62 @@ namespace UltimateHUD
                 RemoveHints(player);
         }
 
+        // Hints for Everyone
+        public static void RemoveClockHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+            if (clockHints.TryGetValue(player, out var hint))
+            {
+                pd.RemoveHint(hint);
+                clockHints.Remove(player);
+            }
+        }
+
+        public static void AddClockHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableClock)
+                pd.AddHint(GetClockHint(player));
+        }
+
+        public static void RemoveTpsHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (tpsHints.TryGetValue(player, out var hint))
+            {
+                pd.RemoveHint(hint);
+                tpsHints.Remove(player);
+            }
+        }
+
+        public static void AddTpsHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableTps)
+                pd.AddHint(GetTpsHint(player));
+        }
+
+        public static void RemoveRoundTimeHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (roundTimeHints.TryGetValue(player, out var hint))
+            {
+                pd.RemoveHint(hint);
+                roundTimeHints.Remove(player);
+            }
+        }
+
+        public static void AddRoundTimeHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableRoundTime)
+                pd.AddHint(GetRoundTimeHint(player));
+        }
         // Player Hints
         public static void RemovePlayerInfoHint(Player player)
         {
@@ -505,7 +526,6 @@ namespace UltimateHUD
         }
 
         // Spectators
-
         public static void RemoveSpectatorPlayerInfoHint(Player player)
         {
             PlayerDisplay pd = PlayerDisplay.Get(player);
