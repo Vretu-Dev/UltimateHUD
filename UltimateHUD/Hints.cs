@@ -16,6 +16,11 @@ namespace UltimateHUD
     {
         private static Config Config => Plugin.Instance.Config;
         private static Translations Translation => Plugin.Instance.Translation;
+
+        private static AutoElement ClockAuto;
+        private static AutoElement TpsAuto;
+        private static AutoElement RoundTimeAuto;
+
         private static readonly IElemReference<DynamicElement> PlayerInfoRef = DisplayCore.GetReference<DynamicElement>();
         private static readonly IElemReference<DynamicElement> AmmoRef = DisplayCore.GetReference<DynamicElement>();
         private static readonly IElemReference<DynamicElement> SpectatingPlayersRef = DisplayCore.GetReference<DynamicElement>();
@@ -30,7 +35,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (!Options.ShouldShow(Config.ClockVisual, p) || !ServerSettings.ShouldShowClock(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableClock)
+                if (!Options.ShouldShow(Config.ClockVisual, p) || !ServerSettings.ShouldShowClock(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 string timerColor = Options.GetRoleColor(p);
@@ -43,18 +48,13 @@ namespace UltimateHUD
             Config.ClockYCordinate
         );
 
-        public static AutoElement ClockAuto = new(Roles.All, ClockElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(2))
-        };
-
         // TPS Hint
         public static DynamicElement TpsElement = new(
             core =>
             {
                 var p = Player.Get(core.Hub);
 
-                if (!Options.ShouldShow(Config.TpsVisual, p) || !ServerSettings.ShouldShowTps(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableTps)
+                if (!Options.ShouldShow(Config.TpsVisual, p) || !ServerSettings.ShouldShowTps(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 int tps = (int)Server.Tps;
@@ -69,18 +69,13 @@ namespace UltimateHUD
             Config.TpsYCordinate
         );
 
-        public static AutoElement TpsAuto = new(Roles.All, TpsElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(2))
-        };
-
         // Round Time Hint
         public static DynamicElement RoundTimeElement = new(
             core =>
             {
                 var p = Player.Get(core.Hub);
 
-                if (!Options.ShouldShow(Config.RoundTimeVisual, p) || !ServerSettings.ShouldShowRoundTime(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableRoundTime)
+                if (!Options.ShouldShow(Config.RoundTimeVisual, p) || !ServerSettings.ShouldShowRoundTime(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 TimeSpan elapsed = Round.ElapsedTime;
@@ -94,11 +89,6 @@ namespace UltimateHUD
             Config.RoundTimeYCordinate
         );
 
-        public static AutoElement RoundTimeAuto = new(Roles.All, RoundTimeElement)
-        {
-            UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(1))
-        };
-
         // Hints for Alive Players
         // Player HUD
         public static DynamicElement PlayerInfoElement = new(
@@ -106,7 +96,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is SpectatorRole || !ServerSettings.ShouldShowPlayerHUD(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnablePlayerHud)
+                if (p.Role is SpectatorRole || !ServerSettings.ShouldShowPlayerHUD(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 string roleColor = Options.GetRoleColor(p);
@@ -142,7 +132,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is SpectatorRole || p.CurrentItem is not Firearm firearm || !ServerSettings.ShouldShowAmmoCounter(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableAmmoCounter)
+                if (p.Role is SpectatorRole || p.CurrentItem is not Firearm firearm || !ServerSettings.ShouldShowAmmoCounter(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 string color = Options.GetRoleColor(p);
@@ -172,7 +162,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is SpectatorRole || Config.HiddenForRoles.Contains(p.Role.Type) || !ServerSettings.ShouldShowSpectatorList(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableSpectatorList)
+                if (p.Role is SpectatorRole || Config.HiddenForRoles.Contains(p.Role.Type) || !ServerSettings.ShouldShowSpectatorList(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 var spectators = p.CurrentSpectatingPlayers
@@ -213,7 +203,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is not SpectatorRole spectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableSpectatorHud)
+                if (p.Role is not SpectatorRole spectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 Player observed = spectatorRole.SpectatedPlayer;
@@ -239,7 +229,7 @@ namespace UltimateHUD
                 int observedKills = EventHandlers.GetKills(observed);
 
                 if (Config.HideSkeletonNickname && observed.Role.Type == RoleTypeId.Scp3114)
-                            observedNickname = observedRole;
+                    observedNickname = observedRole;
 
                 return Config.SpectatorHud
                     .Replace("{nickname}", observedNickname)
@@ -257,7 +247,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p)|| Config.EnableSpectatorServerInfo)
+                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 int totalPlayers = Player.List.Count(pl => !pl.IsHost);
@@ -278,7 +268,7 @@ namespace UltimateHUD
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p) || Config.EnableSpectatorMapInfo)
+                if (p.Role is not SpectatorRole || !ServerSettings.ShouldShowSpectatorHUD(p) || !ServerSettings.ShouldShowHUD(p))
                     return string.Empty;
 
                 int engaged = Generator.List.Count(g => g.IsEngaged);
@@ -298,16 +288,29 @@ namespace UltimateHUD
         public static void RegisterHints()
         {
             RueIMain.EnsureInit();
+
+            if (Config.EnableClock)
+                ClockAuto = new AutoElement(Roles.All, ClockElement) { UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(3)) };
+
+            if (Config.EnableTps)
+                TpsAuto = new AutoElement(Roles.All, TpsElement) { UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(3)) };
+
+            if (Config.EnableRoundTime)
+                RoundTimeAuto = new AutoElement(Roles.All, RoundTimeElement) { UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(1)) };
         }
 
         public static void UnregisterHints()
         {
-            ClockAuto.Disable();
-            TpsAuto.Disable();
-            RoundTimeAuto.Disable();
+            if(Config.EnableClock)
+                ClockAuto.Disable();
 
-            foreach (var player in Player.List)
-                RemoveAllHints(player.ReferenceHub);
+            if (Config.EnableTps)
+                TpsAuto.Disable();
+
+            if (Config.EnableRoundTime)
+                RoundTimeAuto.Disable();
+
+            RemoveAllHints();
         }
 
         public static void RefreshHint(ReferenceHub hub, IElemReference<DynamicElement> hintRef, DynamicElement element)
@@ -324,23 +327,17 @@ namespace UltimateHUD
             core.Update();
         }
 
-        public static void RefreshAllHints(ReferenceHub hub)
+        public static void RefreshHints(ReferenceHub hub)
         {
-            if (Config.EnablePlayerHud)
-                RefreshPlayerInfo(hub);
-            if (Config.EnableAmmoCounter)
-                RefreshAmmo(hub);
-            if (Config.EnableSpectatorList)
-                RefreshSpectatingPlayers(hub);
-            if (Config.EnableSpectatorHud)
-                RefreshSpectatorPlayerInfo(hub);
-            if (Config.EnableSpectatorServerInfo)
-                RefreshServerInfo(hub);
-            if (Config.EnableSpectatorMapInfo)
-                RefreshMapInfo(hub);
+            RefreshPlayerInfo(hub);
+            RefreshAmmo(hub);
+            RefreshSpectatingPlayers(hub);
+            RefreshSpectatorPlayerInfo(hub);
+            RefreshServerInfo(hub);
+            RefreshMapInfo(hub);
         }
 
-        public static void RemoveAllHints(ReferenceHub hub)
+        public static void RemoveHints(ReferenceHub hub)
         {
             RemovePlayerInfo(hub);
             RemoveAmmo(hub);
@@ -350,22 +347,79 @@ namespace UltimateHUD
             RemoveMapInfo(hub);
         }
 
-        public static void RefreshPlayerInfo(ReferenceHub hub) => RefreshHint(hub, PlayerInfoRef, PlayerInfoElement);
-        public static void RemovePlayerInfo(ReferenceHub hub) => RemoveHint(hub, PlayerInfoRef);
+        public static void RemoveAllHints()
+        {
+            foreach (var player in Player.List)
+                RemoveHints(player.ReferenceHub);
+        }
 
-        public static void RefreshAmmo(ReferenceHub hub) => RefreshHint(hub, AmmoRef, AmmoElement);
-        public static void RemoveAmmo(ReferenceHub hub) => RemoveHint(hub, AmmoRef);
+        public static void RefreshPlayerInfo(ReferenceHub hub)
+        {
+            if (Config.EnablePlayerHud)
+                RefreshHint(hub, PlayerInfoRef, PlayerInfoElement);
+        }
 
-        public static void RefreshSpectatingPlayers(ReferenceHub hub) => RefreshHint(hub, SpectatingPlayersRef, SpectatingPlayersElement);
-        public static void RemoveSpectatingPlayers(ReferenceHub hub) => RemoveHint(hub, SpectatingPlayersRef);
+        public static void RemovePlayerInfo(ReferenceHub hub)
+        {
+            if (Config.EnablePlayerHud)
+                RemoveHint(hub, PlayerInfoRef);
+        }
 
-        public static void RefreshSpectatorPlayerInfo(ReferenceHub hub) => RefreshHint(hub, SpectatorPlayerInfoRef, SpectatorPlayerInfoElement);
-        public static void RemoveSpectatorPlayerInfo(ReferenceHub hub) => RemoveHint(hub, SpectatorPlayerInfoRef);
+        public static void RefreshAmmo(ReferenceHub hub)
+        {   
+            if (Config.EnableAmmoCounter)
+                RefreshHint(hub, AmmoRef, AmmoElement);
+        }
+        public static void RemoveAmmo(ReferenceHub hub)
+        {
+            if (Config.EnableAmmoCounter)
+                RemoveHint(hub, AmmoRef);
+        }
 
-        public static void RefreshServerInfo(ReferenceHub hub) => RefreshHint(hub, ServerInfoRef, ServerInfoElement);
-        public static void RemoveServerInfo(ReferenceHub hub) => RemoveHint(hub, ServerInfoRef);
+        public static void RefreshSpectatingPlayers(ReferenceHub hub)
+        {   
+            if (Config.EnableSpectatorList)
+                RefreshHint(hub, SpectatingPlayersRef, SpectatingPlayersElement);
+        }
+        public static void RemoveSpectatingPlayers(ReferenceHub hub)
+        {
+            if (Config.EnableSpectatorList)
+                RemoveHint(hub, SpectatingPlayersRef);
+        }
 
-        public static void RefreshMapInfo(ReferenceHub hub) => RefreshHint(hub, MapInfoRef, MapInfoElement);
-        public static void RemoveMapInfo(ReferenceHub hub) => RemoveHint(hub, MapInfoRef);
+        public static void RefreshSpectatorPlayerInfo(ReferenceHub hub)
+        {
+            if (Config.EnableSpectatorHud)
+                RefreshHint(hub, SpectatorPlayerInfoRef, SpectatorPlayerInfoElement);
+        }
+        public static void RemoveSpectatorPlayerInfo(ReferenceHub hub)
+        {
+            if (Config.EnableSpectatorHud)
+                RemoveHint(hub, SpectatorPlayerInfoRef);
+        }
+
+        public static void RefreshServerInfo(ReferenceHub hub)
+        {
+            if (Config.EnableSpectatorServerInfo)
+                RefreshHint(hub, ServerInfoRef, ServerInfoElement);
+        }
+
+        public static void RemoveServerInfo(ReferenceHub hub)
+        {
+            if (Config.EnableSpectatorServerInfo)
+                RemoveHint(hub, ServerInfoRef);
+        }
+
+        public static void RefreshMapInfo(ReferenceHub hub)
+        {
+            if (Config.EnableSpectatorMapInfo)
+                RefreshHint(hub, MapInfoRef, MapInfoElement);
+        }
+
+        public static void RemoveMapInfo(ReferenceHub hub)
+        {
+            if (Config.EnableSpectatorMapInfo)
+                RemoveHint(hub, MapInfoRef);
+        }
     }
 }
