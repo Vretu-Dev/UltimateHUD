@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using HintServiceMeow.Core.Enum;
 using HintServiceMeow.Core.Utilities;
 using Hint = HintServiceMeow.Core.Models.Hints.Hint;
-using UnityEngine;
-using LabApi.Features.Wrappers;
-using PlayerRoles.Spectating;
 using PlayerRoles;
 using System.Text;
 using System.Text.RegularExpressions;
+using LabApi.Features.Wrappers;
+using PlayerRoles.Spectating;
 
 namespace UltimateHUD
 {
@@ -18,14 +17,16 @@ namespace UltimateHUD
         private static Config Config => Plugin.Instance.Config;
         private static Translations Translation => Plugin.Instance.Translation;
 
-        private static readonly Dictionary<Player, Hint> clockHints = new Dictionary<Player, Hint>();
-        private static readonly Dictionary<Player, Hint> tpsHints = new Dictionary<Player, Hint>();
-        private static readonly Dictionary<Player, Hint> roundTimeHints = new Dictionary<Player, Hint>();
-        private static readonly Dictionary<Player, Hint> playerInfoHints = new Dictionary<Player, Hint>();
-        private static readonly Dictionary<Player, Hint> spectatingPlayerHints = new Dictionary<Player, Hint>();
-        private static readonly Dictionary<Player, Hint> spectatorPlayerInfoHints = new Dictionary<Player, Hint>();
-        private static readonly Dictionary<Player, Hint> serverInfoHints = new Dictionary<Player, Hint>();
-        private static readonly Dictionary<Player, Hint> mapInfoHints = new Dictionary<Player, Hint>();
+        private static readonly Dictionary<Player, Hint> clockHints = new();
+        private static readonly Dictionary<Player, Hint> tpsHints = new();
+        private static readonly Dictionary<Player, Hint> roundTimeHints = new();
+        private static readonly Dictionary<Player, Hint> playerInfoHints = new();
+        private static readonly Dictionary<Player, Hint> spectatingPlayerHints = new();
+        //private static readonly Dictionary<Player, Hint> ammoHints = new();
+        private static readonly Dictionary<Player, Hint> spectatorPlayerInfoHints = new();
+        private static readonly Dictionary<Player, Hint> serverInfoHints = new();
+        private static readonly Dictionary<Player, Hint> mapInfoHints = new();
+
 
         // Hints for Everyone
         public static Hint GetClockHint(Player player)
@@ -53,6 +54,7 @@ namespace UltimateHUD
                     YCoordinate = Config.ClockYCordinate,
                     XCoordinate = Config.ClockXCordinate,
                     SyncSpeed = HintSyncSpeed.Slowest
+
                 };
 
                 clockHints[player] = hint;
@@ -87,7 +89,7 @@ namespace UltimateHUD
                     FontSize = Config.TpsFontSize,
                     YCoordinate = Config.TpsYCordinate,
                     XCoordinate = Config.TpsXCordinate,
-                    SyncSpeed = HintSyncSpeed.Slow
+                    SyncSpeed = HintSyncSpeed.Slowest
                 };
 
                 tpsHints[player] = hint;
@@ -122,6 +124,7 @@ namespace UltimateHUD
                     YCoordinate = Config.RoundTimeYCordinate,
                     XCoordinate = Config.RoundTimeXCordinate,
                     SyncSpeed = HintSyncSpeed.Normal
+
                 };
 
                 roundTimeHints[player] = hint;
@@ -129,49 +132,45 @@ namespace UltimateHUD
 
             return hint;
         }
+
         // Hints for Alive Players
         public static Hint GetPlayerInfoHint(Player player)
         {
             if (!playerInfoHints.TryGetValue(player, out var hint))
             {
+                if (player.RoleBase is SpectatorRole)
+                    return null;
+
+                string roleColor = Options.GetRoleColor(player);
+                string nickname = player.Nickname;
+                string displayname = player.Nickname;
+
+                displayname = Regex.Replace(displayname, "<color=#855439>\\*</color>$", "");
+
+                if (nickname.Length > 20)
+                    nickname = nickname.Substring(0, 20) + "...";
+
+                if (displayname.Length > 20)
+                    displayname = displayname.Substring(0, 20) + "...";
+
+                uint id = (uint)player.PlayerId;
+                string role = Plugin.Instance.Translation.GetRoleDisplayName(player);
+                string coloredRole = $"<color={roleColor}>{role}</color>";
+                int kills = EventHandlers.GetKills(player);
+
+                string infoText = Config.PlayerHud
+                        .Replace("{nickname}", nickname)
+                        .Replace("{displayname}", displayname)
+                        .Replace("{id}", id.ToString())
+                        .Replace("{role}", coloredRole)
+                        .Replace("{kills}", kills.ToString());
+
                 hint = new Hint
                 {
-                    AutoText = arg =>
-                    {
-                        var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-
-                        if (p.RoleBase is SpectatorRole)
-                            return string.Empty;
-
-                        string roleColor = Options.GetRoleColor(p);
-                        string nickname = p.Nickname;
-                        string displayname = p.DisplayName;
-
-                        displayname = Regex.Replace(displayname, "<color=#855439>\\*</color>$", "");
-
-                        if (nickname.Length > 20)
-                            nickname = nickname.Substring(0, 20) + "...";
-
-                        if (displayname.Length > 20)
-                            displayname = displayname.Substring(0, 20) + "...";
-
-                        uint id = (uint)p.PlayerId;
-                        string role = Translation.GetRoleDisplayName(p);
-                        string coloredRole = $"<color={roleColor}>{role}</color>";
-                        int kills = EventHandlers.GetKills(p);
-
-                        return Config.PlayerHud
-                            .Replace("{nickname}", nickname)
-                            .Replace("{displayname}", displayname)
-                            .Replace("{id}", id.ToString())
-                            .Replace("{role}", coloredRole)
-                            .Replace("{kills}", kills.ToString());
-                    },
-
+                    Text = infoText,
                     FontSize = Config.PlayerHudFontSize,
                     YCoordinate = 1050,
-                    Alignment = HintAlignment.Center,
-                    SyncSpeed = HintSyncSpeed.Slow
+                    Alignment = HintAlignment.Center
                 };
 
                 playerInfoHints[player] = hint;
@@ -184,48 +183,41 @@ namespace UltimateHUD
         {
             if (!spectatingPlayerHints.TryGetValue(player, out var hint))
             {
+                if (player.RoleBase is SpectatorRole || Config.HiddenForRoles.Contains(player.Role))
+                    return null;
+
+                var spectators = player.CurrentSpectators
+                    .Where(s => s.Role != RoleTypeId.Overwatch)
+                    .ToList();
+
+                if (spectators.Count == 0)
+                    return null;
+
+                var sb = new StringBuilder();
+
+                string color = Options.GetRoleColor(player);
+
+                sb.AppendLine(
+                    Config.SpectatorListHeader
+                        .Replace("{count}", spectators.Count.ToString())
+                        .Replace("{color}", color)
+                );
+
+                foreach (var spectator in spectators)
+                {
+                    sb.AppendLine(
+                        Config.SpectatorListPlayers
+                            .Replace("{nickname}", spectator.Nickname)
+                            .Replace("{color}", color)
+                    );
+                }
+
                 hint = new Hint
                 {
-                    AutoText = arg =>
-                    {
-                        var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-
-                        if (p.RoleBase is SpectatorRole || Config.HiddenForRoles.Contains(p.Role))
-                            return string.Empty;
-
-                        var spectators = p.CurrentSpectators
-                            .Where(s => s.Role != RoleTypeId.Overwatch)
-                            .ToList();
-
-                        if (spectators.Count == 0)
-                            return string.Empty;
-
-                        var sb = new StringBuilder();
-
-                        string color = Options.GetRoleColor(p);
-
-                        sb.AppendLine(
-                            Config.SpectatorListHeader
-                                .Replace("{count}", spectators.Count.ToString())
-                                .Replace("{color}", color)
-                        );
-
-                        foreach (var spectator in spectators)
-                        {
-                            sb.AppendLine(
-                                Config.SpectatorListPlayers
-                                    .Replace("{nickname}", spectator.Nickname)
-                                    .Replace("{color}", color)
-                            );
-                        }
-                        return sb.ToString();
-
-                    },
-
+                    Text = sb.ToString(),
                     FontSize = Config.SpectatorListFontSize,
                     YCoordinate = Config.SpectatorListYCordinate,
-                    Alignment = HintAlignment.Right,
-                    SyncSpeed = HintSyncSpeed.Normal
+                    Alignment = HintAlignment.Right
                 };
 
                 spectatingPlayerHints[player] = hint;
@@ -234,57 +226,90 @@ namespace UltimateHUD
             return hint;
         }
 
+        /* WAITING FOR FIREARM WRAPPER
+        public static Hint GetAmmoHint(Player player)
+        {
+            if (!ammoHints.TryGetValue(player, out var hint))
+            {
+                if (player.Role is SpectatorRole || player.CurrentItem is not Firearm firearm || !ServerSettings.ShouldShowAmmoCounter(player) || !ServerSettings.ShouldShowHUD(player))
+                    return null;
+
+                string color = Options.GetRoleColor(player);
+                string weapon = Translation.GetWeaponDisplayName(firearm);
+
+                string weaponName = Config.WeaponName
+                    .Replace("{color}", color)
+                    .Replace("{weapon}", weapon);
+
+                string ammoCounter = Config.AmmoCounter
+                    .Replace("{color}", color)
+                    .Replace("{current}", firearm.TotalAmmo.ToString())
+                    .Replace("{max}", firearm.TotalMaxAmmo.ToString());
+
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(weaponName);
+                sb.AppendLine(ammoCounter);
+
+                hint = new Hint
+                {
+                    Text = sb.ToString(),
+                    FontSize = Config.AmmoCounterFontSize,
+                    YCoordinate = Config.AmmoCounterYCordinate
+                };
+
+                ammoHints[player] = hint;
+            }
+
+            return hint;
+        }
+        */
+
         // Hints for Spectators
         public static Hint GetSpectatorPlayerInfoHint(Player player)
         {
             if (!spectatorPlayerInfoHints.TryGetValue(player, out var hint))
             {
+                if (player.RoleBase is not SpectatorRole spectatorRole)
+                    return null;
+
+                Player observed = player.CurrentlySpectating;
+
+                if (observed == null)
+                    return null;
+
+                string observedRoleColor = Options.GetRoleColor(observed);
+                string observedNickname = observed.Nickname;
+                string observedDisplayname = observed.Nickname;
+
+                observedDisplayname = Regex.Replace(observedDisplayname, "<color=#855439>\\*</color>$", "");
+
+                if (observedNickname.Length > 16)
+                    observedNickname = observedNickname.Substring(0, 16) + "...";
+
+                if (observedDisplayname.Length > 16)
+                    observedDisplayname = observedDisplayname.Substring(0, 16) + "...";
+
+                uint observedId = (uint)observed.PlayerId;
+                string observedRole = Translation.GetRoleDisplayName(observed);
+                string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
+                int observedKills = EventHandlers.GetKills(observed);
+
+                if (Config.HideSkeletonNickname && observed.Role == RoleTypeId.Scp3114)
+                    observedNickname = observedRole;
+
+                string infoText = Config.SpectatorHud
+                    .Replace("{nickname}", observedNickname)
+                    .Replace("{displayname}", observedDisplayname)
+                    .Replace("{id}", observedId.ToString())
+                    .Replace("{role}", coloredObservedRole)
+                    .Replace("{kills}", observedKills.ToString());
+
                 hint = new Hint
                 {
-                    AutoText = arg =>
-                    {
-                        var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-
-                        if (p.RoleBase is not SpectatorRole)
-                            return string.Empty;
-  
-                        Player observed = p.CurrentlySpectating;
-
-                        if (observed == null)
-                            return string.Empty;
-
-                        string observedRoleColor = Options.GetRoleColor(observed);
-                        string observedNickname = observed.Nickname;
-                        string observedDisplayname = observed.DisplayName;
-
-                        observedDisplayname = Regex.Replace(observedDisplayname, "<color=#855439>\\*</color>$", "");
-
-                        if (observedNickname.Length > 14)
-                            observedNickname = observedNickname.Substring(0, 16) + "...";
-
-                        if (observedDisplayname.Length > 16)
-                            observedDisplayname = observedDisplayname.Substring(0, 16) + "...";
-
-                        uint observedId = (uint)observed.PlayerId;
-                        string observedRole = Translation.GetRoleDisplayName(observed);
-                        string coloredObservedRole = $"<color={observedRoleColor}>{observedRole}</color>";
-                        int observedKills = EventHandlers.GetKills(observed);
-
-                        if (Config.HideSkeletonNickname && observed.RoleBase.RoleTypeId == RoleTypeId.Scp3114)
-                            observedNickname = observedRole;
-
-                        return Config.SpectatorHud
-                            .Replace("{nickname}", observedNickname)
-                            .Replace("{displayname}", observedDisplayname)
-                            .Replace("{id}", observedId.ToString())
-                            .Replace("{role}", coloredObservedRole)
-                            .Replace("{kills}", observedKills.ToString());
-                    },
-
+                    Text = infoText,
                     FontSize = Config.SpectatorHudFontSize,
                     YCoordinate = 1050,
-                    Alignment = HintAlignment.Center,
-                    SyncSpeed = HintSyncSpeed.Normal
+                    Alignment = HintAlignment.Center
                 };
 
                 spectatorPlayerInfoHints[player] = hint;
@@ -297,29 +322,24 @@ namespace UltimateHUD
         {
             if (!serverInfoHints.TryGetValue(player, out var hint))
             {
+                if (player.RoleBase is not SpectatorRole)
+                    return null;
+
+                int totalPlayers = Player.List.Count(pl => !pl.IsHost);
+                int maxPlayers = Server.MaxPlayers;
+                int spectators = Player.List.Count(pl => pl.RoleBase is SpectatorRole && !pl.IsHost);
+
+                string serverInfo = Config.SpectatorServerInfo
+                    .Replace("{players}", totalPlayers.ToString())
+                    .Replace("{maxPlayers}", maxPlayers.ToString())
+                    .Replace("{spectators}", spectators.ToString());
+
                 hint = new Hint
                 {
-                    AutoText = arg =>
-                    {
-                        var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-
-                        if (p.RoleBase is not SpectatorRole)
-                            return string.Empty;
-
-                        int totalPlayers = Player.List.Count(pl => !pl.IsHost);
-                        int maxPlayers = Server.MaxPlayers;
-                        int spectators = Player.List.Count(pl => pl.Role == RoleTypeId.Spectator && !pl.IsHost);
-
-                        return Config.SpectatorServerInfo
-                            .Replace("{players}", totalPlayers.ToString())
-                            .Replace("{maxPlayers}", maxPlayers.ToString())
-                            .Replace("{spectators}", spectators.ToString());
-                    },
-
+                    Text = serverInfo,
                     FontSize = Config.ServerInfoFontSize,
                     YCoordinate = Config.ServerInfoYCordinate,
-                    XCoordinate = Config.ServerInfoXCordinate,
-                    SyncSpeed = HintSyncSpeed.Slowest
+                    XCoordinate = Config.ServerInfoXCordinate
                 };
 
                 serverInfoHints[player] = hint;
@@ -332,33 +352,28 @@ namespace UltimateHUD
         {
             if (!mapInfoHints.TryGetValue(player, out var hint))
             {
+                if (player.RoleBase is not SpectatorRole)
+                    return null;
+
+                int engaged = Generator.List.Count(g => g.Engaged);
+                int maxGenerators = 3;
+
+                WarheadStatus currentStatus = Options.GetCurrentWarheadStatus();
+                string warheadStatus = Translation.GetWarheadStatusName(currentStatus);
+                string warheadColor = Translation.GetWarheadStatusColor(currentStatus);
+
+                string mapInfo = Config.SpectatorMapInfo
+                    .Replace("{engaged}", engaged.ToString())
+                    .Replace("{maxGenerators}", maxGenerators.ToString())
+                    .Replace("{warheadColor}", warheadColor)
+                    .Replace("{warheadStatus}", warheadStatus);
+
                 hint = new Hint
                 {
-                    AutoText = arg =>
-                    {
-                        var p = Player.Get(arg.PlayerDisplay.ReferenceHub);
-
-                        if (p.RoleBase is not SpectatorRole)
-                            return string.Empty;
-
-                        int engaged = Generator.List.Count(g => g.Engaged);
-                        int maxGenerators = 3;
-
-                        WarheadStatus currentStatus = Options.GetCurrentWarheadStatus();
-                        string warheadStatus = Translation.GetWarheadStatusName(currentStatus);
-                        string warheadColor = Translation.GetWarheadStatusColor(currentStatus);
-
-                        return Config.SpectatorMapInfo
-                            .Replace("{engaged}", engaged.ToString())
-                            .Replace("{maxGenerators}", maxGenerators.ToString())
-                            .Replace("{warheadColor}", warheadColor)
-                            .Replace("{warheadStatus}", warheadStatus);
-                    },
-
+                    Text = mapInfo,
                     FontSize = Config.MapInfoFontSize,
                     YCoordinate = Config.MapInfoYCordinate,
-                    XCoordinate = Config.MapInfoXCordinate,
-                    SyncSpeed = HintSyncSpeed.Normal
+                    XCoordinate = Config.MapInfoXCordinate
                 };
 
                 mapInfoHints[player] = hint;
@@ -369,90 +384,206 @@ namespace UltimateHUD
 
         public static void AddHints(Player player)
         {
-            PlayerDisplay pd = PlayerDisplay.Get(player);
-
-            if (Config.EnableClock)
-                pd.AddHint(GetClockHint(player));
-
-            if (Config.EnableTps)
-                pd.AddHint(GetTpsHint(player));
-
-            if (Config.EnableRoundTime)
-                pd.AddHint(GetRoundTimeHint(player));
-
-            if (player.RoleBase is SpectatorRole)
-            {
-                if(Config.EnableSpectatorHud)
-                    pd.AddHint(GetSpectatorPlayerInfoHint(player));
-
-                if (Config.EnableSpectatorServerInfo)
-                    pd.AddHint(GetServerInfoHint(player));
-
-                if (Config.EnableSpectatorMapInfo)
-                    pd.AddHint(GetMapInfoHint(player));
-            }
-            else
-            {
-                if (Config.EnablePlayerHud)
-                    pd.AddHint(GetPlayerInfoHint(player));
-
-                if (Config.EnableSpectatorList)
-                    pd.AddHint(GetSpectatingPlayer(player));
-            }
+            AddClockHint(player);
+            AddTpsHint(player);
+            AddRoundTimeHint(player);
+            AddPlayerInfoHint(player);
+            AddSpectatingPlayerHint(player);
+            //AddAmmoHint(player);
+            AddSpectatorPlayerInfoHint(player);
+            AddServerInfoHint(player);
+            AddMapInfoHint(player);
         }
 
         public static void RemoveHints(Player player)
         {
-            PlayerDisplay pd = PlayerDisplay.Get(player);
+            RemoveClockHint(player);
+            RemoveTpsHint(player);
+            RemoveRoundTimeHint(player);
+            RemovePlayerInfoHint(player);
+            RemoveSpectatingPlayerHint(player);
+            //RemoveAmmoHint(player);
+            RemoveSpectatorPlayerInfoHint(player);
+            RemoveServerInfoHint(player);
+            RemoveMapInfoHint(player);
+        }
 
+        public static void RemoveAllHints()
+        {
+            foreach (var player in Player.List.ToList())
+                RemoveHints(player);
+        }
+
+        // Hints for Everyone
+        public static void RemoveClockHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
             if (clockHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 clockHints.Remove(player);
             }
-            if (tpsHints.TryGetValue(player, out hint))
+        }
+
+        public static void AddClockHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableClock)
+                pd.AddHint(GetClockHint(player));
+        }
+
+        public static void RemoveTpsHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (tpsHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 tpsHints.Remove(player);
             }
-            if (roundTimeHints.TryGetValue(player, out hint))
+        }
+
+        public static void AddTpsHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableTps)
+                pd.AddHint(GetTpsHint(player));
+        }
+
+        public static void RemoveRoundTimeHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (roundTimeHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 roundTimeHints.Remove(player);
             }
-            if (playerInfoHints.TryGetValue(player, out hint))
+        }
+
+        public static void AddRoundTimeHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableRoundTime)
+                pd.AddHint(GetRoundTimeHint(player));
+        }
+        // Player Hints
+        public static void RemovePlayerInfoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (playerInfoHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 playerInfoHints.Remove(player);
             }
-            if (spectatingPlayerHints.TryGetValue(player, out hint))
+        }
+
+        public static void AddPlayerInfoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnablePlayerHud && player.RoleBase is not SpectatorRole)
+                pd.AddHint(GetPlayerInfoHint(player));
+        }
+
+        public static void RemoveSpectatingPlayerHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (spectatingPlayerHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 spectatingPlayerHints.Remove(player);
             }
-            if (spectatorPlayerInfoHints.TryGetValue(player, out hint))
+        }
+
+        public static void AddSpectatingPlayerHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableSpectatorList && player.RoleBase is not SpectatorRole)
+                pd.AddHint(GetSpectatingPlayer(player));
+        }
+
+        /* WAITING FOR FIREARM WRAPPER
+        public static void RemoveAmmoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (ammoHints.TryGetValue(player, out var hint))
+            {
+                pd.RemoveHint(hint);
+                ammoHints.Remove(player);
+            }
+        }
+
+        public static void AddAmmoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableAmmoCounter && player.Role is not SpectatorRole)
+                pd.AddHint(GetAmmoHint(player));
+        }*/
+        // Spectators
+        public static void RemoveSpectatorPlayerInfoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (spectatorPlayerInfoHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 spectatorPlayerInfoHints.Remove(player);
             }
-            if (serverInfoHints.TryGetValue(player, out hint))
+        }
+
+        public static void AddSpectatorPlayerInfoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableSpectatorHud && player.RoleBase is SpectatorRole)
+                pd.AddHint(GetSpectatorPlayerInfoHint(player));
+        }
+
+        public static void RemoveServerInfoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (serverInfoHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 serverInfoHints.Remove(player);
             }
-            if (mapInfoHints.TryGetValue(player, out hint))
+        }
+
+        public static void AddServerInfoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (Config.EnableSpectatorServerInfo && player.RoleBase is SpectatorRole)
+                pd.AddHint(GetServerInfoHint(player));
+        }
+
+        public static void RemoveMapInfoHint(Player player)
+        {
+            PlayerDisplay pd = PlayerDisplay.Get(player);
+
+            if (mapInfoHints.TryGetValue(player, out var hint))
             {
                 pd.RemoveHint(hint);
                 mapInfoHints.Remove(player);
             }
         }
 
-        public static void RemoveAllHints()
+        public static void AddMapInfoHint(Player player)
         {
-            foreach (var player in Player.List.ToList())
-                if (!player.IsHost)
-                    RemoveHints(player);
-        }
+            PlayerDisplay pd = PlayerDisplay.Get(player);
 
+            if (Config.EnableSpectatorMapInfo && player.RoleBase is SpectatorRole)
+                pd.AddHint(GetMapInfoHint(player));
+        }
     }
 }
