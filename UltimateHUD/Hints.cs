@@ -295,13 +295,6 @@ namespace UltimateHUD
             Config.MapInfoYCordinate
         );
 
-        public static void RefreshPlayerInfoHint(ReferenceHub hub)
-        {
-            var core = DisplayCore.Get(hub);
-            core.AddAsReference(PlayerInfoRef, PlayerInfoElement);
-            core.Update();
-        }
-
         public static void RegisterHints()
         {
             RueIMain.EnsureInit();
@@ -333,12 +326,18 @@ namespace UltimateHUD
 
         public static void RefreshAllHints(ReferenceHub hub)
         {
-            RefreshPlayerInfo(hub);
-            RefreshAmmo(hub);
-            RefreshSpectatingPlayers(hub);
-            RefreshSpectatorPlayerInfo(hub);
-            RefreshServerInfo(hub);
-            RefreshMapInfo(hub);
+            if (Config.EnablePlayerHud)
+                RefreshPlayerInfo(hub);
+            if (Config.EnableAmmoCounter)
+                RefreshAmmo(hub);
+            if (Config.EnableSpectatorList)
+                RefreshSpectatingPlayers(hub);
+            if (Config.EnableSpectatorHud)
+                RefreshSpectatorPlayerInfo(hub);
+            if (Config.EnableSpectatorServerInfo)
+                RefreshServerInfo(hub);
+            if (Config.EnableSpectatorMapInfo)
+                RefreshMapInfo(hub);
         }
 
         public static void RemoveAllHints(ReferenceHub hub)
