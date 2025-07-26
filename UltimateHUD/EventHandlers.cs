@@ -179,9 +179,12 @@ namespace UltimateHUD
             if (ev.NewTarget == null || ev.OldTarget == null || ev.Player == null)
                 return;
 
-            Hints.RefreshSpectatingPlayers(ev.NewTarget.ReferenceHub);
-            Hints.RefreshSpectatingPlayers(ev.OldTarget.ReferenceHub);
-            Hints.RefreshSpectatorPlayerInfo(ev.Player.ReferenceHub);
+            Timing.CallDelayed(0.1f, () =>
+            {
+                Hints.RefreshSpectatingPlayers(ev.NewTarget.ReferenceHub);
+                Hints.RefreshSpectatingPlayers(ev.OldTarget.ReferenceHub);
+                Hints.RefreshSpectatorPlayerInfo(ev.Player.ReferenceHub);
+            });
         }
 
         /// <summary>
