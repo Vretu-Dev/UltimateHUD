@@ -103,6 +103,9 @@ namespace UltimateHUD
         /// <param name="ev"></param>
         private static void OnChangingRole(ChangingRoleEventArgs ev)
         {
+            if (ev.Player == null)
+                return;
+
             Hints.RemoveHints(ev.Player);
 
             Timing.CallDelayed(0.1f, () =>
@@ -190,14 +193,17 @@ namespace UltimateHUD
             if (ev.NewTarget == null || ev.OldTarget == null || ev.Player == null)
                 return;
 
-            Hints.RemoveSpectatingPlayerHint(ev.NewTarget);
-            Hints.AddSpectatingPlayerHint(ev.NewTarget);
+            Timing.CallDelayed(0.1f, () =>
+            {
+                Hints.RemoveSpectatingPlayerHint(ev.NewTarget);
+                Hints.AddSpectatingPlayerHint(ev.NewTarget);
 
-            Hints.RemoveSpectatingPlayerHint(ev.OldTarget);
-            Hints.AddSpectatingPlayerHint(ev.OldTarget);
+                Hints.RemoveSpectatingPlayerHint(ev.OldTarget);
+                Hints.AddSpectatingPlayerHint(ev.OldTarget);
 
-            Hints.RemoveSpectatorPlayerInfoHint(ev.Player);
-            Hints.AddSpectatorPlayerInfoHint(ev.Player);
+                Hints.RemoveSpectatorPlayerInfoHint(ev.Player);
+                Hints.AddSpectatorPlayerInfoHint(ev.Player);
+            });
         }
 
         /// <summary>
