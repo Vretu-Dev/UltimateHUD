@@ -10,6 +10,7 @@ using PlayerRoles;
 using System.Collections.Generic;
 using System.Linq;
 using MEC;
+using UltimateHUD.Extensions;
 
 namespace UltimateHUD
 {
@@ -34,6 +35,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Warhead.Starting += OnStarting;
             Exiled.Events.Handlers.Warhead.Stopping += OnStopping;
             Exiled.Events.Handlers.Map.GeneratorActivating += OnGeneratorActivating;
+            HintUpdater.RegisterUpdater();
         }
 
         public static void UnregisterEvents()
@@ -53,6 +55,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Warhead.Starting -= OnStarting;
             Exiled.Events.Handlers.Warhead.Stopping -= OnStopping;
             Exiled.Events.Handlers.Map.GeneratorActivating -= OnGeneratorActivating;
+            HintUpdater.UnregisterUpdater();
         }
 
         /// <summary>

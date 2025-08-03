@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="EventHandlers.cs" />
+    <Compile Include="Extensions\HintUpdater.cs" />
     <Compile Include="Hints.cs" />
     <Compile Include="Extensions\Options.cs" />
     <Compile Include="Plugin.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
+using RueI;
 
 namespace UltimateHUD
 {
@@ -9,7 +10,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHUD";
-        public override Version Version => new Version(6, 1, 0);
+        public override Version Version => new Version(6, 2, 0);
         public override Version RequiredExiledVersion { get; } = new Version(9, 6, 0);
         public static Plugin Instance { get; private set; }
         public HeaderSetting SettingsHeader { get; set; } = new HeaderSetting("Ultimate HUD");
@@ -17,10 +18,10 @@ namespace UltimateHUD
         public override void OnEnabled()
         {
             Instance = this;
+            RueIMain.EnsureInit();
             SettingBase.Register(new[] { SettingsHeader });
             EventHandlers.RegisterEvents();
             ServerSettings.RegisterSettings();
-            Hints.RegisterHints();
             base.OnEnabled();
         }
 
@@ -30,7 +31,6 @@ namespace UltimateHUD
             SettingBase.Unregister(settings: new[] { SettingsHeader });
             EventHandlers.UnregisterEvents();
             ServerSettings.UnregisterSettings();
-            Hints.UnregisterHints();
             base.OnDisabled();
         }
     }
