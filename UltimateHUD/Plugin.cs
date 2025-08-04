@@ -13,7 +13,7 @@ namespace UltimateHUD
         public override Version Version => new Version(6, 2, 0);
         public override Version RequiredExiledVersion { get; } = new Version(9, 6, 0);
         public static Plugin Instance { get; private set; }
-        public HeaderSetting SettingsHeader { get; set; } = new HeaderSetting("Ultimate HUD");
+        public HeaderSetting SettingsHeader { get; set; } = new HeaderSetting(5553, "Ultimate HUD");
 
         public override void OnEnabled()
         {
