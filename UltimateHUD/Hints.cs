@@ -16,12 +16,11 @@ namespace UltimateHUD
         private static Config Config => Plugin.Instance.Config;
         private static Translations Translation => Plugin.Instance.Translation;
 
-        private static AutoElement ClockAuto;
-        private static AutoElement TpsAuto;
-        private static AutoElement RoundTimeAuto;
-
+        private static readonly IElemReference<DynamicElement> ClockRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> TpsRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> RoundTimeRef = DisplayCore.GetReference<DynamicElement>();
         private static readonly IElemReference<DynamicElement> PlayerInfoRef = DisplayCore.GetReference<DynamicElement>();
-        //private static readonly IElemReference<DynamicElement> AmmoRef = DisplayCore.GetReference<DynamicElement>();
+        private static readonly IElemReference<DynamicElement> AmmoRef = DisplayCore.GetReference<DynamicElement>();
         private static readonly IElemReference<DynamicElement> SpectatingPlayersRef = DisplayCore.GetReference<DynamicElement>();
         private static readonly IElemReference<DynamicElement> SpectatorPlayerInfoRef = DisplayCore.GetReference<DynamicElement>();
         private static readonly IElemReference<DynamicElement> ServerInfoRef = DisplayCore.GetReference<DynamicElement>();
@@ -100,7 +99,7 @@ namespace UltimateHUD
 
                 string roleColor = Options.GetRoleColor(p);
                 string nickname = p.Nickname;
-                string displayname = p.Nickname;
+                string displayname = p.DisplayName;
 
                 displayname = Regex.Replace(displayname, "<color=#855439>\\*</color>$", "");
 
@@ -125,14 +124,13 @@ namespace UltimateHUD
             Config.PlayerHudYCordinate
         );
 
-        /*
         // Ammo Counter
         public static DynamicElement AmmoElement = new(
             core =>
             {
                 var p = Player.Get(core.Hub);
 
-                if (p.RoleBase is SpectatorRole || p.CurrentItem is not Firearm firearm || !ServerSettings.ShouldShowAmmoCounter(p) || !ServerSettings.ShouldShowHUD(p))
+                if (p.RoleBase is SpectatorRole || p.CurrentItem is not FirearmItem firearm)
                     return string.Empty;
 
                 string color = Options.GetRoleColor(p);
@@ -144,8 +142,8 @@ namespace UltimateHUD
 
                 string ammoCounter = Config.AmmoCounter
                     .Replace("{color}", color)
-                    .Replace("{current}", firearm.TotalAmmo.ToString())
-                    .Replace("{max}", firearm.TotalMaxAmmo.ToString());
+                    .Replace("{current}", firearm.StoredAmmo.ToString())
+                    .Replace("{max}", firearm.MaxAmmo.ToString());
 
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(weaponName);
@@ -154,7 +152,7 @@ namespace UltimateHUD
                 return sb.ToString();
             },
             Config.AmmoCounterYCordinate
-        );*/
+        );
 
         // Spectator Players List
         public static DynamicElement SpectatingPlayersElement = new(
@@ -287,31 +285,6 @@ namespace UltimateHUD
             Config.MapInfoYCordinate
         );
 
-        public static void RegisterHints()
-        {
-            RueIMain.EnsureInit();
-            if (Config.EnableClock)
-                ClockAuto = new AutoElement(Roles.All, ClockElement) { UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(3)) };
-            if (Config.EnableTps)
-                TpsAuto = new AutoElement(Roles.All, TpsElement) { UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(3)) };
-            if (Config.EnableRoundTime)
-                RoundTimeAuto = new AutoElement(Roles.All, RoundTimeElement) { UpdateEvery = new AutoElement.PeriodicUpdate(TimeSpan.FromSeconds(1)) };
-        }
-
-        public static void UnregisterHints()
-        {
-            if (Config.EnableClock)
-                ClockAuto.Disable();
-
-            if (Config.EnableTps)
-                TpsAuto.Disable();
-
-            if (Config.EnableRoundTime)
-                RoundTimeAuto.Disable();
-
-            RemoveAllHints();
-        }
-
         public static void RefreshHint(ReferenceHub hub, IElemReference<DynamicElement> hintRef, DynamicElement element)
         {
             var core = DisplayCore.Get(hub);
@@ -328,8 +301,11 @@ namespace UltimateHUD
 
         public static void RefreshHints(ReferenceHub hub)
         {
+            RefreshClock(hub);
+            RefreshTps(hub);
+            RefreshRoundTime(hub);
             RefreshPlayerInfo(hub);
-            //RefreshAmmo(hub);
+            RefreshAmmo(hub);
             RefreshSpectatingPlayers(hub);
             RefreshSpectatorPlayerInfo(hub);
             RefreshServerInfo(hub);
@@ -338,8 +314,11 @@ namespace UltimateHUD
 
         public static void RemoveHints(ReferenceHub hub)
         {
+            RemoveClock(hub);
+            RemoveTps(hub);
+            RemoveRoundTime(hub);
             RemovePlayerInfo(hub);
-            //RemoveAmmo(hub);
+            RemoveAmmo(hub);
             RemoveSpectatingPlayers(hub);
             RemoveSpectatorPlayerInfo(hub);
             RemoveServerInfo(hub);
@@ -350,6 +329,40 @@ namespace UltimateHUD
         {
             foreach (var player in Player.List)
                 RemoveHints(player.ReferenceHub);
+        }
+
+        public static void RefreshClock(ReferenceHub hub)
+        {
+            if (Config.EnableClock)
+                RefreshHint(hub, ClockRef, ClockElement);
+        }
+
+        public static void RemoveClock(ReferenceHub hub)
+        {
+            if (Config.EnableClock)
+                RemoveHint(hub, ClockRef);
+        }
+        public static void RefreshTps(ReferenceHub hub)
+        {
+            if (Config.EnableTps)
+                RefreshHint(hub, TpsRef, TpsElement);
+        }
+
+        public static void RemoveTps(ReferenceHub hub)
+        {
+            if (Config.EnableTps)
+                RemoveHint(hub, TpsRef);
+        }
+        public static void RefreshRoundTime(ReferenceHub hub)
+        {
+            if (Config.EnableRoundTime)
+                RefreshHint(hub, RoundTimeRef, RoundTimeElement);
+        }
+
+        public static void RemoveRoundTime(ReferenceHub hub)
+        {
+            if (Config.EnableRoundTime)
+                RemoveHint(hub, RoundTimeRef);
         }
 
         public static void RefreshPlayerInfo(ReferenceHub hub)
@@ -363,8 +376,6 @@ namespace UltimateHUD
             if (Config.EnablePlayerHud)
                 RemoveHint(hub, PlayerInfoRef);
         }
-
-        /*
         public static void RefreshAmmo(ReferenceHub hub)
         {
             if (Config.EnableAmmoCounter)
@@ -374,7 +385,7 @@ namespace UltimateHUD
         {
             if (Config.EnableAmmoCounter)
                 RemoveHint(hub, AmmoRef);
-        }*/
+        }
 
         public static void RefreshSpectatingPlayers(ReferenceHub hub)
         {

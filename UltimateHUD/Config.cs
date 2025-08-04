@@ -42,6 +42,12 @@ namespace UltimateHUD
         public List<RoleTypeId> HiddenForRoles { get; set; } = [RoleTypeId.Overwatch];
         public int SpectatorListYCordinate { get; set; } = 800;
 
+        [Description("Ammo Counter:")]
+        public bool EnableAmmoCounter { get; set; } = true;
+        public string WeaponName { get; set; } = "<size=28><space=-900><color={color}>{weapon}</color> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt</size>";
+        public string AmmoCounter { get; set; } = "<size=28><space=-900><b><color={color}>{current} / {max}</color></b> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt</size>";
+        public int AmmoCounterYCordinate { get; set; } = 150;
+
         [Description("Spectator HUD Settings:")]
         public bool EnableSpectatorHud { get; set; } = true;
         [Description("You can use {displayname} instead of {nickname}")]
