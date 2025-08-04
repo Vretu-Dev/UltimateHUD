@@ -31,6 +31,13 @@ namespace UltimateHUD
             return normalTranslation ?? player.Role.ToString();
         }
 
+        public static string GetWeaponDisplayName(this Translations config, FirearmItem firearm)
+        {
+            var weaponTranslation = config.WeaponName.FirstOrDefault(w => w.Weapon == firearm.Type);
+
+            return weaponTranslation?.Name ?? firearm.Type.ToString();
+        }
+
         public static string GetRoleColor(Player player)
         {
             return "#" + ColorUtility.ToHtmlStringRGB(player.RoleBase.RoleColor);

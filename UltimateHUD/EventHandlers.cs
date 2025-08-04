@@ -22,11 +22,11 @@ namespace UltimateHUD
             LabApi.Events.Handlers.PlayerEvents.Left += OnLeftPlayer;
             LabApi.Events.Handlers.PlayerEvents.Joined += OnVerifiedPlayer;
             LabApi.Events.Handlers.PlayerEvents.ChangedSpectator += OnChangingSpectatedPlayer;
-            //LabApi.Events.Handlers.PlayerEvents.ShotWeapon += OnPlayerShot;
-            //LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon += OnPlayerReloaded;
-            //LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon += OnPlayerUnloaded;
-            //LabApi.Events.Handlers.PlayerEvents.ChangedItem += OnChangedItem;
-            //LabApi.Events.Handlers.WarheadEvents.ChangingLever += OnChangingLeverStatus;
+            LabApi.Events.Handlers.PlayerEvents.ShotWeapon += OnPlayerShot;
+            LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon += OnPlayerReloaded;
+            LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon += OnPlayerUnloaded;
+            LabApi.Events.Handlers.PlayerEvents.ChangedItem += OnChangedItem;
+            LabApi.Events.Handlers.PlayerEvents.InteractingWarheadLever += OnChangingLeverStatus;
             LabApi.Events.Handlers.WarheadEvents.Detonated += OnDetonated;
             LabApi.Events.Handlers.WarheadEvents.Starting += OnStarting;
             LabApi.Events.Handlers.WarheadEvents.Stopping += OnStopping;
@@ -41,11 +41,11 @@ namespace UltimateHUD
             LabApi.Events.Handlers.PlayerEvents.Left -= OnLeftPlayer;
             LabApi.Events.Handlers.PlayerEvents.Joined -= OnVerifiedPlayer;
             LabApi.Events.Handlers.PlayerEvents.ChangedSpectator -= OnChangingSpectatedPlayer;
-            //LabApi.Events.Handlers.PlayerEvents.ShotWeapon -= OnPlayerShot;
-            //LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon -= OnPlayerReloaded;
-            //LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon -= OnPlayerUnloaded;
-            //LabApi.Events.Handlers.PlayerEvents.ChangedItem -= OnChangedItem;
-            //LabApi.Events.Handlers.WarheadEvents.ChangingLever -= OnChangingLeverStatus;
+            LabApi.Events.Handlers.PlayerEvents.ShotWeapon -= OnPlayerShot;
+            LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon -= OnPlayerReloaded;
+            LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon -= OnPlayerUnloaded;
+            LabApi.Events.Handlers.PlayerEvents.ChangedItem -= OnChangedItem;
+            LabApi.Events.Handlers.PlayerEvents.InteractingWarheadLever -= OnChangingLeverStatus;
             LabApi.Events.Handlers.WarheadEvents.Detonated -= OnDetonated;
             LabApi.Events.Handlers.WarheadEvents.Starting -= OnStarting;
             LabApi.Events.Handlers.WarheadEvents.Stopping -= OnStopping;
@@ -174,14 +174,13 @@ namespace UltimateHUD
             Hints.AddSpectatorPlayerInfoHint(ev.Player);
         }
 
-        /* WAITING FOR FIREARM WRAPPER & WARHEAD CHANGING LEVER EVENT
         /// <summary>
         /// Refreshes the ammo hint when a player shoots a firearm.
         /// </summary>
         /// <param name="ev"></param>
         private static void OnPlayerShot(PlayerShotWeaponEventArgs ev)
         {
-            if (ev.FirearmItem.Base is not Firearm)
+            if (ev.FirearmItem == null)
                 return;
 
             Hints.RemoveAmmoHint(ev.Player);
@@ -192,9 +191,9 @@ namespace UltimateHUD
         /// Refreshes the ammo hint when a player reloads a firearm.
         /// </summary>
         /// <param name="ev"></param>
-        private static void OnPlayerReloaded(ReloadedWeaponEventArgs ev)
+        private static void OnPlayerReloaded(PlayerReloadedWeaponEventArgs ev)
         {
-            if (ev.Item is not Firearm)
+            if (ev.FirearmItem == null)
                 return;
 
             Hints.RemoveAmmoHint(ev.Player);
@@ -205,9 +204,9 @@ namespace UltimateHUD
         /// Refreshes the ammo hint when a player unloads a firearm.
         /// </summary>
         /// <param name="ev"></param>
-        private static void OnPlayerUnloaded(UnloadedWeaponEventArgs ev)
+        private static void OnPlayerUnloaded(PlayerUnloadedWeaponEventArgs ev)
         {
-            if (ev.Item is not Firearm)
+            if (ev.FirearmItem == null)
                 return;
 
             Hints.RemoveAmmoHint(ev.Player);
@@ -218,11 +217,11 @@ namespace UltimateHUD
         /// Refreshes the ammo hint when a player changes their item, specifically for firearms.
         /// </summary>
         /// <param name="ev"></param>
-        private static void OnChangedItem(ChangedItemEventArgs ev)
+        private static void OnChangedItem(PlayerChangedItemEventArgs ev)
         {
-            if (ev.Item is Firearm)
+            if (ev.NewItem is FirearmItem)
                 Hints.AddAmmoHint(ev.Player);
-            if (ev.OldItem is Firearm)
+            if (ev.OldItem is FirearmItem)
                 Hints.RemoveAmmoHint(ev.Player);
         }
 
@@ -230,7 +229,7 @@ namespace UltimateHUD
         /// Refreshes the map info hint for spectators when the lever status is changing.
         /// </summary>
         /// <param name="ev"></param>
-        private static void OnChangingLeverStatus(ChangingLeverStatusEventArgs ev)
+        private static void OnChangingLeverStatus(PlayerInteractingWarheadLeverEventArgs ev)
         {
             Timing.CallDelayed(0.1f, () =>
             {
@@ -241,7 +240,6 @@ namespace UltimateHUD
                 }
             });
         }
-        */
 
         /// <summary>
         /// Refreshes the map info hint for spectators when the warhead is starting.

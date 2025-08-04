@@ -24,6 +24,12 @@ namespace UltimateHUD
         public string Name { get; set; }
     }
 
+    public class WeaponName
+    {
+        public ItemType Weapon { get; set; }
+        public string Name { get; set; }
+    }
+
     public class Translations
     {
         public List<WarheadStatusName> WarheadStatuses { get; set; } = new List<WarheadStatusName>()
@@ -59,5 +65,22 @@ namespace UltimateHUD
             new RoleName { Role = RoleTypeId.Scp939, Name = "SCP-939" },
             new RoleName { Role = RoleTypeId.Scp3114, Name = "SCP-3114" },
         };
-    }
+
+        public List<WeaponName> WeaponName { get; set; } = new List<WeaponName>()
+        {
+            new WeaponName { Weapon = ItemType.GunCOM15, Name = "COM-15" },
+            new WeaponName { Weapon = ItemType.GunCOM18, Name = "COM-18" },
+            new WeaponName { Weapon = ItemType.GunE11SR, Name = "Epsilon" },
+            new WeaponName { Weapon = ItemType.GunFSP9, Name = "FSP-9" },
+            new WeaponName { Weapon = ItemType.GunLogicer, Name = "Logicer" },
+            new WeaponName { Weapon = ItemType.GunRevolver, Name = "Revolver" },
+            new WeaponName { Weapon = ItemType.GunAK, Name = "AK" },
+            new WeaponName { Weapon = ItemType.GunShotgun, Name = "Shotgun" },
+            new WeaponName { Weapon = ItemType.GunCom45, Name = "COM-45" },
+            new WeaponName { Weapon = ItemType.ParticleDisruptor, Name = "Particle X3" },
+            new WeaponName { Weapon = ItemType.GunFRMG0, Name = "FR-MG-0" },
+            new WeaponName { Weapon = ItemType.GunA7, Name = "A7" },
+            new WeaponName { Weapon = ItemType.GunSCP127, Name = "SCP-127" }
+        };
+}
 }

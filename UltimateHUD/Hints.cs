@@ -22,7 +22,7 @@ namespace UltimateHUD
         private static readonly Dictionary<Player, Hint> roundTimeHints = new();
         private static readonly Dictionary<Player, Hint> playerInfoHints = new();
         private static readonly Dictionary<Player, Hint> spectatingPlayerHints = new();
-        //private static readonly Dictionary<Player, Hint> ammoHints = new();
+        private static readonly Dictionary<Player, Hint> ammoHints = new();
         private static readonly Dictionary<Player, Hint> spectatorPlayerInfoHints = new();
         private static readonly Dictionary<Player, Hint> serverInfoHints = new();
         private static readonly Dictionary<Player, Hint> mapInfoHints = new();
@@ -143,7 +143,7 @@ namespace UltimateHUD
 
                 string roleColor = Options.GetRoleColor(player);
                 string nickname = player.Nickname;
-                string displayname = player.Nickname;
+                string displayname = player.DisplayName;
 
                 displayname = Regex.Replace(displayname, "<color=#855439>\\*</color>$", "");
 
@@ -225,13 +225,11 @@ namespace UltimateHUD
 
             return hint;
         }
-
-        /* WAITING FOR FIREARM WRAPPER
         public static Hint GetAmmoHint(Player player)
         {
             if (!ammoHints.TryGetValue(player, out var hint))
             {
-                if (player.Role is SpectatorRole || player.CurrentItem is not Firearm firearm || !ServerSettings.ShouldShowAmmoCounter(player) || !ServerSettings.ShouldShowHUD(player))
+                if (player.RoleBase is SpectatorRole || player.CurrentItem is not FirearmItem firearm)
                     return null;
 
                 string color = Options.GetRoleColor(player);
@@ -243,8 +241,8 @@ namespace UltimateHUD
 
                 string ammoCounter = Config.AmmoCounter
                     .Replace("{color}", color)
-                    .Replace("{current}", firearm.TotalAmmo.ToString())
-                    .Replace("{max}", firearm.TotalMaxAmmo.ToString());
+                    .Replace("{current}", firearm.StoredAmmo.ToString())
+                    .Replace("{max}", firearm.MaxAmmo.ToString());
 
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine(weaponName);
@@ -262,7 +260,6 @@ namespace UltimateHUD
 
             return hint;
         }
-        */
 
         // Hints for Spectators
         public static Hint GetSpectatorPlayerInfoHint(Player player)
@@ -279,7 +276,7 @@ namespace UltimateHUD
 
                 string observedRoleColor = Options.GetRoleColor(observed);
                 string observedNickname = observed.Nickname;
-                string observedDisplayname = observed.Nickname;
+                string observedDisplayname = observed.DisplayName;
 
                 observedDisplayname = Regex.Replace(observedDisplayname, "<color=#855439>\\*</color>$", "");
 
@@ -389,7 +386,7 @@ namespace UltimateHUD
             AddRoundTimeHint(player);
             AddPlayerInfoHint(player);
             AddSpectatingPlayerHint(player);
-            //AddAmmoHint(player);
+            AddAmmoHint(player);
             AddSpectatorPlayerInfoHint(player);
             AddServerInfoHint(player);
             AddMapInfoHint(player);
@@ -402,7 +399,7 @@ namespace UltimateHUD
             RemoveRoundTimeHint(player);
             RemovePlayerInfoHint(player);
             RemoveSpectatingPlayerHint(player);
-            //RemoveAmmoHint(player);
+            RemoveAmmoHint(player);
             RemoveSpectatorPlayerInfoHint(player);
             RemoveServerInfoHint(player);
             RemoveMapInfoHint(player);
@@ -508,8 +505,6 @@ namespace UltimateHUD
             if (Config.EnableSpectatorList && player.RoleBase is not SpectatorRole)
                 pd.AddHint(GetSpectatingPlayer(player));
         }
-
-        /* WAITING FOR FIREARM WRAPPER
         public static void RemoveAmmoHint(Player player)
         {
             PlayerDisplay pd = PlayerDisplay.Get(player);
@@ -525,9 +520,9 @@ namespace UltimateHUD
         {
             PlayerDisplay pd = PlayerDisplay.Get(player);
 
-            if (Config.EnableAmmoCounter && player.Role is not SpectatorRole)
+            if (Config.EnableAmmoCounter && player.RoleBase is not SpectatorRole)
                 pd.AddHint(GetAmmoHint(player));
-        }*/
+        }
         // Spectators
         public static void RemoveSpectatorPlayerInfoHint(Player player)
         {
