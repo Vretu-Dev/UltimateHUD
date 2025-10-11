@@ -5,11 +5,11 @@
 ## Downloads:
 | Framework | Version    |  Release                                                              |
 |:---------:|:----------:|:----------------------------------------------------------------------:|
-| Exiled    | ≥ 9.6.0    | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest)        |
+| Exiled    | ≥ 9.9.X    | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest)        |
 | LabAPI    | 1.0.2      | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest) |
 
 ## Requirements:
-- Hint Service Meow [V5.4.2](https://github.com/MeowServer/HintServiceMeow/releases/tag/V5.4.2)
+- RueI [V3.1.X](https://github.com/pawslee/RueI/releases)
 
 ## Features:
 - Clock
@@ -25,57 +25,68 @@
 ## Credits:
 - Thanks [@NamelessSCP](https://github.com/NamelessSCP) for using the [SpectatorList](https://github.com/NamelessSCP/SpectatorList-SL) idea.<br>
 
+<details>
+<summary><b>RueI v3 Integration 🔗</b></summary><br>
+
 ## Config:
 ```yaml
 is_enabled: true
 debug: false
 # Clock Settings:
 enable_clock: true
-clock: '<color={color}><b>Time:</b> {time}</color>'
+clock: '<space=-480><color={color}><size=25><b>Time:</b> {time}</size></color>'
 # UTC Time Zone | 2 = UTC+2
 time_zone: 2
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
 clock_visual: 'BOTH'
-clock_x_cordinate: -480
-clock_y_cordinate: 20
+clock_y_cordinate: 980
 # TPS Settings:
 enable_tps: true
-tps: '<color={color}><b>TPS:</b> {tps}/{maxTps}</color>'
+tps: '<space=-60><color={color}><size=25><b>TPS:</b> {tps}/{maxTps}</size></color>'
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
 tps_visual: 'BOTH'
-tps_x_cordinate: -60
-tps_y_cordinate: 20
+tps_y_cordinate: 980
 # ROUND TIME Settings:
 enable_round_time: true
-round_time: '<color={color}><b>Round Time:</b> {round_time}</color>'
+round_time: '<space=400><color={color}><size=25><b>Round Time:</b> {round_time}</size></color>'
 # GAMEPLAY = only for players | SPECTATOR = only for spectators | BOTH = spectator & gameplay
 round_time_visual: 'BOTH'
-round_time_x_cordinate: 400
-round_time_y_cordinate: 20
+round_time_y_cordinate: 980
 # Player HUD Settings:
 enable_player_hud: true
-player_hud: '<color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>'
+# You can use {displayname} instead of {nickname}
+player_hud: '<size=33><color=#808080><b>Nick:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color></size>'
+player_hud_y_cordinate: 15
 # Spectator List:
 enable_spectator_list: true
-spectator_list_header: "<color={color}>\U0001F465 Spectators ({count})</color>"
-spectator_list_players: '<color={color}>• {nickname}</color>'
+spectator_list_header: "<align=right><size=28><color={color}>\U0001F465 Spectators ({count})</color></size></align>"
+spectator_list_players: '<align=right><size=28><color={color}>• {nickname}</color></size></align>'
 hidden_for_roles:
 - Overwatch
-spectator_list_y_cordinate: 100
+spectator_list_y_cordinate: 800
+# Ammo Counter:
+enable_ammo_counter: true
+weapon_name: '<size=28><space=-900><color={color}>{weapon}</color> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt</size>'
+ammo_counter: '<size=28><space=-900><b><color={color}>{current} / {max}</color></b> <alpha=#00>tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt</size>'
+ammo_counter_y_cordinate: 150
 # Spectator HUD Settings:
 enable_spectator_hud: true
-spectator_hud: '<color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color>'
+# You can use {displayname} instead of {nickname}
+spectator_hud: '<size=33><color=#808080><b>Spectating:</b> <color=white>{nickname}</color> <b>|</b> <b>ID:</b> <color=white>{id}</color> <b>|</b> <b>Role:</b> {role} <b>| Kills:</b> <color=yellow>{kills}</color></color></size>'
+spectator_hud_y_cordinate: 15
+# If true, will not show the spectated player's nickname when they are a skeleton (SCP-3114). This mimics the behavior of the base-game spectator UI.
+hide_skeleton_nickname: true
 # Spectator Map Info:
 enable_spectator_map_info: true
-spectator_map_info: '<b>Generators:</b> <color=orange>{engaged}/{maxGenerators}</color> <b>| Warhead:</b> <color={warheadColor}>{warheadStatus}</color>'
-map_info_x_cordinate: 650
-map_info_y_cordinate: 1000
+spectator_map_info: '<space=650><size=27><b>Generators:</b> <color=orange>{engaged}/{maxGenerators}</color> <b>| Warhead:</b> <color={warheadColor}>{warheadStatus}</color></size>'
+map_info_y_cordinate: 70
 # Spectator Server Info:
 enable_spectator_server_info: true
-spectator_server_info: '<b>Players:</b> <color=orange>{players}/{maxPlayers}</color> <b>| Spectators:</b> <color=orange>{spectators}</color>'
-server_info_x_cordinate: -500
-server_info_y_cordinate: 1000
+spectator_server_info: '<space=-500><size=27><b>Players:</b> <color=orange>{players}/{maxPlayers}</color> <b>| Spectators:</b> <color=orange>{spectators}</color></size>'
+server_info_y_cordinate: 70
 ```
+
+</details>
 
 ## Showcase:
 ### Gameplay
