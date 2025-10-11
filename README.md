@@ -28,7 +28,7 @@
 
 ## Config:
 <details>
-<summary><b>RueI v3 Integration 🔗</b></summary><br>
+<summary><b>7777.yml</b></summary><br>
 
 ```yaml
 is_enabled: true
