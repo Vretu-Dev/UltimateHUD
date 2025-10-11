@@ -25,10 +25,11 @@
 ## Credits:
 - Thanks [@NamelessSCP](https://github.com/NamelessSCP) for using the [SpectatorList](https://github.com/NamelessSCP/SpectatorList-SL) idea.<br>
 
+
+## Config:
 <details>
 <summary><b>RueI v3 Integration 🔗</b></summary><br>
 
-## Config:
 ```yaml
 is_enabled: true
 debug: false
