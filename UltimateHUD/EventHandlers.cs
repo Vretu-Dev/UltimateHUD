@@ -1,174 +1,179 @@
-﻿using PlayerRoles;
-using System.Collections.Generic;
-using System.Linq;
+﻿using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
+using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Features.Wrappers;
 using PlayerRoles.Spectating;
-using LabApi.Events.Arguments.PlayerEvents;
-using LabApi.Events.Arguments.WarheadEvents;
+using System.Collections.Generic;
+using System.Linq;
 using MEC;
-using UltimateHUD.Extensions;
 
 namespace UltimateHUD
 {
     public static class EventHandlers
     {
-        private static readonly Dictionary<Player, int> playerKills = new();
+        public static readonly Dictionary<string, int> Kills = new();
+        public static int GetKills(Player player) => player != null && Kills.TryGetValue(player.UserId, out var k) ? k : 0;
 
         public static void RegisterEvents()
         {
+            LabApi.Events.Handlers.ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
             LabApi.Events.Handlers.ServerEvents.RoundEnded += OnRoundEnded;
-            LabApi.Events.Handlers.PlayerEvents.Death += OnPlayerDied;
+
+            LabApi.Events.Handlers.PlayerEvents.Joined += OnVerified;
+            LabApi.Events.Handlers.PlayerEvents.Left += OnLeft;
+            LabApi.Events.Handlers.PlayerEvents.Death += OnDied;
             LabApi.Events.Handlers.PlayerEvents.ChangingRole += OnChangingRole;
-            LabApi.Events.Handlers.PlayerEvents.Left += OnLeftPlayer;
-            LabApi.Events.Handlers.PlayerEvents.Joined += OnVerifiedPlayer;
             LabApi.Events.Handlers.PlayerEvents.ChangedSpectator += OnChangingSpectatedPlayer;
-            LabApi.Events.Handlers.PlayerEvents.ShotWeapon += OnPlayerShot;
-            LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon += OnPlayerReloaded;
-            LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon += OnPlayerUnloaded;
+
+            LabApi.Events.Handlers.PlayerEvents.ShotWeapon += OnShot;
+            LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon += OnReloaded;
+            LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon += OnUnloaded;
             LabApi.Events.Handlers.PlayerEvents.ChangedItem += OnChangedItem;
-            LabApi.Events.Handlers.PlayerEvents.InteractingWarheadLever += OnChangingLeverStatus;
-            LabApi.Events.Handlers.WarheadEvents.Detonated += OnDetonated;
-            LabApi.Events.Handlers.WarheadEvents.Starting += OnStarting;
-            LabApi.Events.Handlers.WarheadEvents.Stopping += OnStopping;
+
+            LabApi.Events.Handlers.PlayerEvents.InteractingWarheadLever += OnWarheadLever;
+            LabApi.Events.Handlers.WarheadEvents.Starting += OnWarheadStarting;
+            LabApi.Events.Handlers.WarheadEvents.Stopping += OnWarheadStopping;
+            LabApi.Events.Handlers.WarheadEvents.Detonated += OnWarheadDetonated;
+
             LabApi.Events.Handlers.ServerEvents.GeneratorActivating += OnGeneratorActivating;
-            HintUpdater.RegisterUpdater();
         }
 
         public static void UnregisterEvents()
         {
+            LabApi.Events.Handlers.ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
             LabApi.Events.Handlers.ServerEvents.RoundEnded -= OnRoundEnded;
-            LabApi.Events.Handlers.PlayerEvents.Death -= OnPlayerDied;
+
+            LabApi.Events.Handlers.PlayerEvents.Joined -= OnVerified;
+            LabApi.Events.Handlers.PlayerEvents.Left -= OnLeft;
+            LabApi.Events.Handlers.PlayerEvents.Death -= OnDied;
             LabApi.Events.Handlers.PlayerEvents.ChangingRole -= OnChangingRole;
-            LabApi.Events.Handlers.PlayerEvents.Left -= OnLeftPlayer;
-            LabApi.Events.Handlers.PlayerEvents.Joined -= OnVerifiedPlayer;
             LabApi.Events.Handlers.PlayerEvents.ChangedSpectator -= OnChangingSpectatedPlayer;
-            LabApi.Events.Handlers.PlayerEvents.ShotWeapon -= OnPlayerShot;
-            LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon -= OnPlayerReloaded;
-            LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon -= OnPlayerUnloaded;
+
+            LabApi.Events.Handlers.PlayerEvents.ShotWeapon -= OnShot;
+            LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon -= OnReloaded;
+            LabApi.Events.Handlers.PlayerEvents.UnloadedWeapon -= OnUnloaded;
             LabApi.Events.Handlers.PlayerEvents.ChangedItem -= OnChangedItem;
-            LabApi.Events.Handlers.PlayerEvents.InteractingWarheadLever -= OnChangingLeverStatus;
-            LabApi.Events.Handlers.WarheadEvents.Detonated -= OnDetonated;
-            LabApi.Events.Handlers.WarheadEvents.Starting -= OnStarting;
-            LabApi.Events.Handlers.WarheadEvents.Stopping -= OnStopping;
+
+            LabApi.Events.Handlers.PlayerEvents.InteractingWarheadLever -= OnWarheadLever;
+            LabApi.Events.Handlers.WarheadEvents.Starting -= OnWarheadStarting;
+            LabApi.Events.Handlers.WarheadEvents.Stopping -= OnWarheadStopping;
+            LabApi.Events.Handlers.WarheadEvents.Detonated -= OnWarheadDetonated;
+
             LabApi.Events.Handlers.ServerEvents.GeneratorActivating -= OnGeneratorActivating;
-            HintUpdater.UnregisterUpdater();
         }
 
         /// <summary>
-        /// Handles the round end event to clear all hints and reset player kill counts.
+        /// Handles the reset player kill counts.
         /// </summary>
-        /// <param name="ev"></param>
+        private static void OnWaitingForPlayers()
+        {
+            Kills.Clear();
+        }
+
+        /// <summary>
+        /// Handles the round end event to clear all hints.
+        /// </summary>
         private static void OnRoundEnded(RoundEndedEventArgs ev)
         {
-            Hints.RemoveAllHints();
-            playerKills.Clear();
+            foreach (var p in Player.ReadyList)
+                Hints.RemoveAll(p);
         }
 
         /// <summary>
         /// Refreshes the server info hint for all spectators to ensure update players count and spectators count.
         /// </summary>
-        /// <param name="ev"></param>
-        private static void OnVerifiedPlayer(PlayerJoinedEventArgs ev)
+        private static void OnVerified(PlayerJoinedEventArgs ev)
         {
-            foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
-            {
-                Hints.RefreshServerInfo(spectator.ReferenceHub);
-            }
+            if (ev.Player == null || !Round.IsRoundStarted)
+                return;
+
+            Hints.RefreshAll(ev.Player);
+            RefreshAllSpectatorServerInfo();
         }
+
 
         /// <summary>
         /// Refreshes the server info hint for all spectators to ensure update players count and spectators count.
         /// </summary>
-        /// <param name="ev"></param>
-        private static void OnLeftPlayer(PlayerLeftEventArgs ev)
+        private static void OnLeft(PlayerLeftEventArgs ev)
         {
-            Hints.RemoveHints(ev.Player.ReferenceHub);
+            if (ev.Player == null)
+                return;
 
-            playerKills.Remove(ev.Player);
-
-            foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
-            {
-                Hints.RefreshServerInfo(spectator.ReferenceHub);
-            }
+            Kills.Remove(ev.Player.UserId);
+            RefreshAllSpectatorServerInfo();
         }
 
         /// <summary>
         /// Handles the role change event to refresh hints for the player and Server Info hint for all spectators.
         /// </summary>
-        /// <param name="ev"></param>
         private static void OnChangingRole(PlayerChangingRoleEventArgs ev)
         {
+            if (ev.Player == null)
+                return;
+
             Timing.CallDelayed(0.1f, () =>
             {
-                Hints.RefreshHints(ev.Player.ReferenceHub);
+                if (ev.Player.IsDestroyed)
+                    return;
 
-                if (ev.NewRole == RoleTypeId.Spectator)
-                {
-                    foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
-                    {
-                        Hints.RefreshServerInfo(spectator.ReferenceHub);
-                    }
-                }
+                Hints.RefreshAll(ev.Player);
+
+                RefreshAllSpectatorServerInfo();
+
+                Hints.RefreshSpectatorList(ev.Player.ReferenceHub);
             });
-        }
-
-        /// <summary>
-        /// Refreshes the player info hints for spectators when a player dies.
-        /// </summary>
-        /// <param name="ev"></param>
-        private static void OnPlayerDied(PlayerDeathEventArgs ev)
-        {
-            if (ev.Attacker != null && ev.Attacker != ev.Player)
-            {
-                Player killer = ev.Attacker;
-
-                if (playerKills.ContainsKey(killer))
-                    playerKills[killer]++;
-                else
-                    playerKills[killer] = 1;
-
-                Hints.RefreshPlayerInfo(killer.ReferenceHub);
-            }
-
-            foreach (var spectator in Player.List.Where(p => p.Role == RoleTypeId.Spectator))
-            {
-                if (ev.Attacker != null && ev.Attacker == spectator.CurrentlySpectating)
-                {
-                    Hints.RefreshSpectatorPlayerInfo(spectator.ReferenceHub);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the number of kills a player has made during the round.
-        /// </summary>
-        /// <param name="player"></param>
-        /// <returns></returns>
-        public static int GetKills(Player player)
-        {
-            return playerKills.TryGetValue(player, out int kills) ? kills : 0;
         }
 
         /// <summary>
         /// Refreshes the hints for the spectated and spectating player when a player changes their spectated target.
         /// </summary>
-        /// <param name="ev"></param>
         private static void OnChangingSpectatedPlayer(PlayerChangedSpectatorEventArgs ev)
         {
-            if (ev.NewTarget == null || ev.OldTarget == null || ev.Player == null)
+            if (ev.Player == null)
                 return;
 
-            Hints.RefreshSpectatingPlayers(ev.NewTarget.ReferenceHub);
-            Hints.RefreshSpectatingPlayers(ev.OldTarget.ReferenceHub);
-            Hints.RefreshSpectatorPlayerInfo(ev.Player.ReferenceHub);
+            Timing.CallDelayed(0.1f, () =>
+            {
+                if (ev.Player.IsDestroyed)
+                    return;
+
+                RefreshSpectatorListsForTargets(ev.OldTarget, ev.NewTarget);
+                Hints.RefreshSpectatorPlayerInfo(ev.Player.ReferenceHub);
+            });
+        }
+
+        /// <summary>
+        /// Handles the player death event to update kill counts and hints for players, especially for SCP-106 kills in the Pocket Dimension.
+        /// Refreshes the player info hints for the killer  and spectators if they are spectating the killer to update kill counter.
+        /// </summary>
+        private static void OnDied(PlayerDeathEventArgs ev)
+        {
+            if (ev.Attacker != null && ev.Attacker != ev.Player)
+            {
+                AddKill(ev.Attacker);
+                Hints.RefreshPlayerInfo(ev.Attacker.ReferenceHub);
+
+                foreach (var spec in Player.ReadyList.Where(p => p.RoleBase is SpectatorRole && p.CurrentlySpectating == ev.Attacker))
+                    Hints.RefreshSpectatorPlayerInfo(spec.ReferenceHub);
+            }
+        }
+
+        private static void AddKill(Player killer)
+        {
+            if (killer == null)
+                return;
+
+            if (Kills.TryGetValue(killer.UserId, out var v))
+                Kills[killer.UserId] = v + 1;
+            else
+                Kills[killer.UserId] = 1;
         }
 
         /// <summary>
         /// Refreshes the ammo hint when a player shoots a firearm.
         /// </summary>
-        /// <param name="ev"></param>
-        private static void OnPlayerShot(PlayerShotWeaponEventArgs ev)
+        private static void OnShot(PlayerShotWeaponEventArgs ev)
         {
             if (ev.FirearmItem == null)
                 return;
@@ -179,8 +184,7 @@ namespace UltimateHUD
         /// <summary>
         /// Refreshes the ammo hint when a player reloads a firearm.
         /// </summary>
-        /// <param name="ev"></param>
-        private static void OnPlayerReloaded(PlayerReloadedWeaponEventArgs ev)
+        private static void OnReloaded(PlayerReloadedWeaponEventArgs ev)
         {
             if (ev.FirearmItem == null)
                 return;
@@ -191,8 +195,7 @@ namespace UltimateHUD
         /// <summary>
         /// Refreshes the ammo hint when a player unloads a firearm.
         /// </summary>
-        /// <param name="ev"></param>
-        private static void OnPlayerUnloaded(PlayerUnloadedWeaponEventArgs ev)
+        private static void OnUnloaded(PlayerUnloadedWeaponEventArgs ev)
         {
             if (ev.FirearmItem == null)
                 return;
@@ -203,86 +206,47 @@ namespace UltimateHUD
         /// <summary>
         /// Refreshes the ammo hint when a player changes their item, specifically for firearms.
         /// </summary>
-        /// <param name="ev"></param>
         private static void OnChangedItem(PlayerChangedItemEventArgs ev)
         {
-            if (ev.NewItem is FirearmItem)
-                Hints.RefreshAmmo(ev.Player.ReferenceHub);
-
-            if (ev.OldItem is FirearmItem)
+            if (ev.NewItem is FirearmItem || ev.OldItem is FirearmItem)
                 Hints.RefreshAmmo(ev.Player.ReferenceHub);
         }
 
         /// <summary>
-        /// Refreshes the map info hint for spectators when the lever status is changing.
+        /// Refreshes the map info hint for spectators.
         /// </summary>
-        /// <param name="ev"></param>
-        private static void OnChangingLeverStatus(PlayerInteractingWarheadLeverEventArgs ev)
-        {
-            Timing.CallDelayed(0.1f, () =>
-            {
-                foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
-                {
-                    Hints.RefreshMapInfo(spectator.ReferenceHub);
-                }
-            });
-        }
+        private static void OnWarheadLever(PlayerInteractingWarheadLeverEventArgs ev) => DelayedMapUpdate();
+        private static void OnWarheadStarting(WarheadStartingEventArgs ev) => DelayedMapUpdate();
+        private static void OnWarheadStopping(WarheadStoppingEventArgs ev) => DelayedMapUpdate();
+        private static void OnWarheadDetonated(WarheadDetonatedEventArgs ev) => RefreshAllSpectatorMapInfo();
+        private static void OnGeneratorActivating(GeneratorActivatingEventArgs ev) => DelayedMapUpdate();
+        private static void DelayedMapUpdate(float delay = 0.1f) => Timing.CallDelayed(delay, RefreshAllSpectatorMapInfo);
 
-        /// <summary>
-        /// Refreshes the map info hint for spectators when the warhead is starting.
-        /// </summary>
-        /// <param name="ev"></param>
-        private static void OnStarting(WarheadStartingEventArgs ev)
-        {
-            Timing.CallDelayed(0.1f, () =>
-            {
-                foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
-                {
-                    Hints.RefreshMapInfo(spectator.ReferenceHub);
-                }
-            });
-        }
+        // ========== Helpers ==========
 
-        /// <summary>
-        /// Refreshes the map info hint for spectators when the warhead is detonated.
-        /// </summary>
-        /// <param name="ev"></param>
-        private static void OnDetonated(WarheadDetonatedEventArgs ev)
+        private static void RefreshAllSpectatorServerInfo()
         {
-            foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
+            foreach (var spec in Player.ReadyList.Where(p => p.RoleBase is SpectatorRole))
             {
-                Hints.RefreshMapInfo(spectator.ReferenceHub);
+                Hints.RefreshSpectatorServerInfo(spec.ReferenceHub);
             }
         }
 
-        /// <summary>
-        /// Refreshes the map info hint for spectators when the warhead is stopping.
-        /// </summary>
-        /// <param name="ev"></param>
-        private static void OnStopping(WarheadStoppingEventArgs ev)
+        private static void RefreshAllSpectatorMapInfo()
         {
-            Timing.CallDelayed(0.1f, () =>
+            foreach (var spec in Player.ReadyList.Where(p => p.RoleBase is SpectatorRole))
             {
-                foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
-                {
-                    Hints.RefreshMapInfo(spectator.ReferenceHub);
-                }
-            });
+                Hints.RefreshSpectatorMapInfo(spec.ReferenceHub);
+            }
         }
 
-        /// <summary>
-        /// Refreshes the map info hint for spectators when a generator is activating.
-        /// </summary>
-        /// <param name="ev"></param>
-        private static void OnGeneratorActivating(GeneratorActivatingEventArgs ev)
+        private static void RefreshSpectatorListsForTargets(Player oldTarget, Player newTarget)
         {
-            Timing.CallDelayed(0.1f, () =>
-            {
-                foreach (var spectator in Player.List.Where(p => p.RoleBase is SpectatorRole))
-                {
-                    Hints.RefreshMapInfo(spectator.ReferenceHub);
-                }
-            });
+            if (oldTarget != null)
+                Hints.RefreshSpectatorList(oldTarget.ReferenceHub);
+
+            if (newTarget != null && newTarget != oldTarget)
+                Hints.RefreshSpectatorList(newTarget.ReferenceHub);
         }
     }
 }

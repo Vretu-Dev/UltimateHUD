@@ -1,7 +1,6 @@
 ﻿using System;
 using LabApi.Features;
 using LabApi.Loader;
-using RueI;
 using Loader = LabApi.Loader.Features.Plugins.Plugin;
 
 namespace UltimateHUD
@@ -11,7 +10,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Description => "Customizable HUD for SCP:SL.";
         public override string Author => "Vretu";
-        public override Version Version => new Version(6, 2, 1);
+        public override Version Version => new Version(7, 0, 0);
         public override Version RequiredApiVersion { get; } = new Version(LabApiProperties.CompiledVersion);
         public static Plugin Instance { get; private set; }
         public Translations Translation { get; private set; }
@@ -20,7 +19,6 @@ namespace UltimateHUD
         public override void Enable()
         {
             Instance = this;
-            RueIMain.EnsureInit();
             EventHandlers.RegisterEvents();
         }
 
