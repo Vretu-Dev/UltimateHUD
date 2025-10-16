@@ -9,8 +9,12 @@
 | LabAPI    | 1.0.2      | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest) |
 
 ## Requirements:
-- RueI [V3.1.X](https://github.com/pawslee/RueI/releases)
+- ### RueI [V3.1.X](https://github.com/pawslee/RueI/releases)
+> [!IMPORTANT]
+> Place the RueI.dll file in the LabAPI plugin folder.
 
+> [!CAUTION]
+> Plugins using RueI V2 will not work.
 ## Features:
 - Clock
 - TPS
