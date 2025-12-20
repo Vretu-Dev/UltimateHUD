@@ -5,8 +5,8 @@
 ## Downloads:
 | Framework | Version    |  Release                                                              |
 |:---------:|:----------:|:----------------------------------------------------------------------:|
-| Exiled    | ≥ 9.9.X    | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest)        |
-| LabAPI    | 1.0.2      | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases/latest) |
+| Exiled    | ≥ 9.11.X    | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases)        |
+| LabAPI    | ≥ 1.1.4      | [⬇️](https://github.com/Vretu-Dev/UltimateHUD/releases) |
 
 ## Requirements:
 - #### RueI [V3.1.X](https://github.com/pawslee/RueI/releases)
