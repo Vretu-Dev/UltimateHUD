@@ -23,7 +23,8 @@ namespace UltimateHUD
             LabApi.Events.Handlers.PlayerEvents.Left += OnLeft;
             LabApi.Events.Handlers.PlayerEvents.Death += OnDied;
             LabApi.Events.Handlers.PlayerEvents.ChangingRole += OnChangingRole;
-            LabApi.Events.Handlers.PlayerEvents.ChangedSpectator += OnChangingSpectatedPlayer;
+            LabApi.Events.Handlers.PlayerEvents.ChangedSpectator += OnChangedSpectatedPlayer;
+            LabApi.Events.Handlers.PlayerEvents.ChangedNickname += OnChangedNickname;
 
             LabApi.Events.Handlers.PlayerEvents.ShotWeapon += OnShot;
             LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon += OnReloaded;
@@ -47,7 +48,8 @@ namespace UltimateHUD
             LabApi.Events.Handlers.PlayerEvents.Left -= OnLeft;
             LabApi.Events.Handlers.PlayerEvents.Death -= OnDied;
             LabApi.Events.Handlers.PlayerEvents.ChangingRole -= OnChangingRole;
-            LabApi.Events.Handlers.PlayerEvents.ChangedSpectator -= OnChangingSpectatedPlayer;
+            LabApi.Events.Handlers.PlayerEvents.ChangedSpectator -= OnChangedSpectatedPlayer;
+            LabApi.Events.Handlers.PlayerEvents.ChangedNickname -= OnChangedNickname;
 
             LabApi.Events.Handlers.PlayerEvents.ShotWeapon -= OnShot;
             LabApi.Events.Handlers.PlayerEvents.ReloadedWeapon -= OnReloaded;
@@ -128,7 +130,7 @@ namespace UltimateHUD
         /// <summary>
         /// Refreshes the hints for the spectated and spectating player when a player changes their spectated target.
         /// </summary>
-        private static void OnChangingSpectatedPlayer(PlayerChangedSpectatorEventArgs ev)
+        private static void OnChangedSpectatedPlayer(PlayerChangedSpectatorEventArgs ev)
         {
             if (ev.Player == null)
                 return;
@@ -140,6 +142,27 @@ namespace UltimateHUD
 
                 RefreshSpectatorListsForTargets(ev.OldTarget, ev.NewTarget);
                 Hints.RefreshSpectatorPlayerInfo(ev.Player.ReferenceHub);
+            });
+        }
+
+        /// <summary>
+        /// Handles the nickname change event to refresh hints for the player and Server Info hint for all spectators.
+        /// </summary>
+        private static void OnChangedNickname(PlayerChangedNicknameEventArgs ev)
+        {
+            if (ev.Player == null)
+                return;
+
+            Timing.CallDelayed(0.1f, () =>
+            {
+                if (ev.Player.IsDestroyed)
+                    return;
+
+                Hints.RefreshAll(ev.Player);
+
+                RefreshAllSpectatorServerInfo();
+
+                Hints.RefreshSpectatorList(ev.Player.ReferenceHub);
             });
         }
 
