@@ -10,7 +10,7 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Description => "Customizable HUD for SCP:SL.";
         public override string Author => "Vretu";
-        public override Version Version => new Version(7, 0, 0);
+        public override Version Version => new Version(7, 0, 2);
         public override Version RequiredApiVersion { get; } = new Version(LabApiProperties.CompiledVersion);
         public static Plugin Instance { get; private set; }
         public Translations Translation { get; private set; }
