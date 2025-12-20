@@ -6,10 +6,10 @@ using Exiled.Events.EventArgs.Map;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Server;
 using Exiled.Events.EventArgs.Warhead;
+using MEC;
 using PlayerRoles;
 using System.Collections.Generic;
 using System.Linq;
-using MEC;
 
 namespace UltimateHUD
 {
@@ -28,6 +28,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Player.Died += OnDied;
             Exiled.Events.Handlers.Player.ChangingRole += OnChangingRole;
             Exiled.Events.Handlers.Player.ChangingSpectatedPlayer += OnChangingSpectatedPlayer;
+            Exiled.Events.Handlers.Player.ChangingNickname += OnChangingNickname;
 
             Exiled.Events.Handlers.Player.Shot += OnShot;
             Exiled.Events.Handlers.Player.ReloadedWeapon += OnReloaded;
@@ -52,6 +53,7 @@ namespace UltimateHUD
             Exiled.Events.Handlers.Player.Died -= OnDied;
             Exiled.Events.Handlers.Player.ChangingRole -= OnChangingRole;
             Exiled.Events.Handlers.Player.ChangingSpectatedPlayer -= OnChangingSpectatedPlayer;
+            Exiled.Events.Handlers.Player.ChangingNickname -= OnChangingNickname;
 
             Exiled.Events.Handlers.Player.Shot -= OnShot;
             Exiled.Events.Handlers.Player.ReloadedWeapon -= OnReloaded;
@@ -144,6 +146,27 @@ namespace UltimateHUD
 
                 RefreshSpectatorListsForTargets(ev.OldTarget, ev.NewTarget);
                 Hints.RefreshSpectatorPlayerInfo(ev.Player.ReferenceHub);
+            });
+        }
+
+        /// <summary>
+        /// Handles the nickname change event to refresh hints for the player and Server Info hint for all spectators.
+        /// </summary>
+        private static void OnChangingNickname(ChangingNicknameEventArgs ev)
+        {
+            if (ev.Player == null)
+                return;
+
+            Timing.CallDelayed(0.1f, () =>
+            {
+                if (!ev.Player.IsConnected)
+                    return;
+
+                Hints.RefreshAll(ev.Player);
+
+                RefreshAllSpectatorServerInfo();
+
+                Hints.RefreshSpectatorList(ev.Player.ReferenceHub);
             });
         }
 
