@@ -27,39 +27,38 @@ namespace UltimateHUD
         private static readonly Tag SpectatorServerInfoTag = new("hud_spec_serverinfo");
         private static readonly Tag SpectatorMapInfoTag = new("hud_spec_mapinfo");
 
-        public static void RefreshAll(Player p)
+        public static void RefreshAll(Player player)
         {
-            var hub = p.ReferenceHub;
-            RefreshClock(hub);
-            RefreshTps(hub);
-            RefreshRoundTime(hub);
-            RefreshPlayerInfo(hub);
-            RefreshAmmo(hub);
-            RefreshSpectatorList(hub);
-            RefreshSpectatorPlayerInfo(hub);
-            RefreshSpectatorServerInfo(hub);
-            RefreshSpectatorMapInfo(hub);
+            RefreshClock(player);
+            RefreshTps(player);
+            RefreshRoundTime(player);
+            RefreshPlayerInfo(player);
+            RefreshAmmo(player);
+            RefreshSpectatorList(player);
+            RefreshSpectatorPlayerInfo(player);
+            RefreshSpectatorServerInfo(player);
+            RefreshSpectatorMapInfo(player);
         }
 
-        public static void RemoveAll(Player p)
+        public static void RemoveAll(Player player)
         {
-            var d = RueDisplay.Get(p.ReferenceHub);
-            d.Remove(ClockTag);
-            d.Remove(TpsTag);
-            d.Remove(RoundTimeTag);
-            d.Remove(PlayerInfoTag);
-            d.Remove(AmmoTag);
-            d.Remove(SpectatorsListTag);
-            d.Remove(SpectatorPlayerInfoTag);
-            d.Remove(SpectatorServerInfoTag);
-            d.Remove(SpectatorMapInfoTag);
+            RueDisplay display = RueDisplay.Get(player);
+            display.Remove(ClockTag);
+            display.Remove(TpsTag);
+            display.Remove(RoundTimeTag);
+            display.Remove(PlayerInfoTag);
+            display.Remove(AmmoTag);
+            display.Remove(SpectatorsListTag);
+            display.Remove(SpectatorPlayerInfoTag);
+            display.Remove(SpectatorServerInfoTag);
+            display.Remove(SpectatorMapInfoTag);
         }
 
         // =============== AUTO-REFRESH ===============
 
-        public static void RefreshClock(ReferenceHub hub)
+        public static void RefreshClock(Player player)
         {
-            if (!Config.EnableClock) { RueDisplay.Get(hub).Remove(ClockTag); return; }
+            if (!Config.EnableClock) { RueDisplay.Get(player).Remove(ClockTag); return; }
 
             var element = new DynamicElement(
                 position: Config.ClockYCordinate,
@@ -85,12 +84,12 @@ namespace UltimateHUD
                 ShowToSpectators = false
             };
 
-            RueDisplay.Get(hub).Show(ClockTag, element);
+            RueDisplay.Get(player).Show(ClockTag, element);
         }
 
-        public static void RefreshTps(ReferenceHub hub)
+        public static void RefreshTps(Player player)
         {
-            if (!Config.EnableTps) { RueDisplay.Get(hub).Remove(TpsTag); return; }
+            if (!Config.EnableTps) { RueDisplay.Get(player).Remove(TpsTag); return; }
 
             var element = new DynamicElement(
                 position: Config.TpsYCordinate,
@@ -117,12 +116,12 @@ namespace UltimateHUD
                 ShowToSpectators = false
             };
 
-            RueDisplay.Get(hub).Show(TpsTag, element);
+            RueDisplay.Get(player).Show(TpsTag, element);
         }
 
-        public static void RefreshRoundTime(ReferenceHub hub)
+        public static void RefreshRoundTime(Player player)
         {
-            if (!Config.EnableRoundTime) { RueDisplay.Get(hub).Remove(RoundTimeTag); return; }
+            if (!Config.EnableRoundTime) { RueDisplay.Get(player).Remove(RoundTimeTag); return; }
 
             var element = new DynamicElement(
                 position: Config.RoundTimeYCordinate,
@@ -149,21 +148,21 @@ namespace UltimateHUD
                 ShowToSpectators = false
             };
 
-            RueDisplay.Get(hub).Show(RoundTimeTag, element);
+            RueDisplay.Get(player).Show(RoundTimeTag, element);
         }
 
         // =============== EVENTBASE-REFRESH  ===============
 
-        public static void RefreshPlayerInfo(ReferenceHub hub)
+        public static void RefreshPlayerInfo(Player player)
         {
-            if (!Config.EnablePlayerHud) { RueDisplay.Get(hub).Remove(PlayerInfoTag); return; }
+            if (!Config.EnablePlayerHud) { RueDisplay.Get(player).Remove(PlayerInfoTag); return; }
 
-            var p = Player.Get(hub);
+            var p = Player.Get(player);
 
             if (p == null ||
                 p.RoleBase is SpectatorRole)
             {
-                RueDisplay.Get(hub).Remove(PlayerInfoTag);
+                RueDisplay.Get(player).Remove(PlayerInfoTag);
                 return;
             }
 
@@ -175,20 +174,20 @@ namespace UltimateHUD
                 VerticalAlign = VerticalAlign.Down
             };
 
-            RueDisplay.Get(hub).Show(PlayerInfoTag, element);
+            RueDisplay.Get(player).Show(PlayerInfoTag, element);
         }
 
-        public static void RefreshAmmo(ReferenceHub hub)
+        public static void RefreshAmmo(Player player)
         {
-            if (!Config.EnableAmmoCounter) { RueDisplay.Get(hub).Remove(AmmoTag); return; }
+            if (!Config.EnableAmmoCounter) { RueDisplay.Get(player).Remove(AmmoTag); return; }
 
-            var p = Player.Get(hub);
+            var p = Player.Get(player);
 
             if (p == null ||
                 p.RoleBase is SpectatorRole ||
                 p.CurrentItem is not FirearmItem firearm)
             {
-                RueDisplay.Get(hub).Remove(AmmoTag);
+                RueDisplay.Get(player).Remove(AmmoTag);
                 return;
             }
 
@@ -212,20 +211,20 @@ namespace UltimateHUD
                 VerticalAlign = VerticalAlign.Down
             };
 
-            RueDisplay.Get(hub).Show(AmmoTag, element);
+            RueDisplay.Get(player).Show(AmmoTag, element);
         }
 
-        public static void RefreshSpectatorList(ReferenceHub hub)
+        public static void RefreshSpectatorList(Player player)
         {
-            if (!Config.EnableSpectatorList) { RueDisplay.Get(hub).Remove(SpectatorsListTag); return; }
+            if (!Config.EnableSpectatorList) { RueDisplay.Get(player).Remove(SpectatorsListTag); return; }
 
-            var p = Player.Get(hub);
+            var p = Player.Get(player);
 
             if (p == null ||
                 p.RoleBase is SpectatorRole ||
                 Config.HiddenForRoles.Contains(p.Role))
             {
-                RueDisplay.Get(hub).Remove(SpectatorsListTag);
+                RueDisplay.Get(player).Remove(SpectatorsListTag);
                 return;
             }
 
@@ -235,7 +234,7 @@ namespace UltimateHUD
 
             if (spectators.Count == 0)
             {
-                RueDisplay.Get(hub).Remove(SpectatorsListTag);
+                RueDisplay.Get(player).Remove(SpectatorsListTag);
                 return;
             }
 
@@ -265,18 +264,18 @@ namespace UltimateHUD
                 VerticalAlign = VerticalAlign.Down
             };
 
-            RueDisplay.Get(hub).Show(SpectatorsListTag, element);
+            RueDisplay.Get(player).Show(SpectatorsListTag, element);
         }
 
-        public static void RefreshSpectatorPlayerInfo(ReferenceHub hub)
+        public static void RefreshSpectatorPlayerInfo(Player player)
         {
-            if (!Config.EnableSpectatorHud) { RueDisplay.Get(hub).Remove(SpectatorPlayerInfoTag); return; }
+            if (!Config.EnableSpectatorHud) { RueDisplay.Get(player).Remove(SpectatorPlayerInfoTag); return; }
 
-            var p = Player.Get(hub);
+            var p = Player.Get(player);
 
             if (p?.RoleBase is not SpectatorRole)
             {
-                RueDisplay.Get(hub).Remove(SpectatorPlayerInfoTag);
+                RueDisplay.Get(player).Remove(SpectatorPlayerInfoTag);
                 return;
             }
 
@@ -284,7 +283,7 @@ namespace UltimateHUD
 
             if (observed == null)
             {
-                RueDisplay.Get(hub).Remove(SpectatorPlayerInfoTag);
+                RueDisplay.Get(player).Remove(SpectatorPlayerInfoTag);
                 return;
             }
 
@@ -296,18 +295,18 @@ namespace UltimateHUD
                 VerticalAlign = VerticalAlign.Down
             };
 
-            RueDisplay.Get(hub).Show(SpectatorPlayerInfoTag, element);
+            RueDisplay.Get(player).Show(SpectatorPlayerInfoTag, element);
         }
 
-        public static void RefreshSpectatorServerInfo(ReferenceHub hub)
+        public static void RefreshSpectatorServerInfo(Player player)
         {
-            if (!Config.EnableSpectatorServerInfo) { RueDisplay.Get(hub).Remove(SpectatorServerInfoTag); return; }
+            if (!Config.EnableSpectatorServerInfo) { RueDisplay.Get(player).Remove(SpectatorServerInfoTag); return; }
 
-            var p = Player.Get(hub);
+            var p = Player.Get(player);
 
             if (p?.RoleBase is not SpectatorRole)
             {
-                RueDisplay.Get(hub).Remove(SpectatorServerInfoTag);
+                RueDisplay.Get(player).Remove(SpectatorServerInfoTag);
                 return;
             }
 
@@ -326,18 +325,18 @@ namespace UltimateHUD
                 VerticalAlign = VerticalAlign.Down
             };
 
-            RueDisplay.Get(hub).Show(SpectatorServerInfoTag, element);
+            RueDisplay.Get(player).Show(SpectatorServerInfoTag, element);
         }
 
-        public static void RefreshSpectatorMapInfo(ReferenceHub hub)
+        public static void RefreshSpectatorMapInfo(Player player)
         {
-            if (!Config.EnableSpectatorMapInfo) { RueDisplay.Get(hub).Remove(SpectatorMapInfoTag); return; }
+            if (!Config.EnableSpectatorMapInfo) { RueDisplay.Get(player).Remove(SpectatorMapInfoTag); return; }
 
-            var p = Player.Get(hub);
+            var p = Player.Get(player);
 
             if (p?.RoleBase is not SpectatorRole)
             {
-                RueDisplay.Get(hub).Remove(SpectatorMapInfoTag);
+                RueDisplay.Get(player).Remove(SpectatorMapInfoTag);
                 return;
             }
 
@@ -360,7 +359,7 @@ namespace UltimateHUD
                 VerticalAlign = VerticalAlign.Down
             };
 
-            RueDisplay.Get(hub).Show(SpectatorMapInfoTag, element);
+            RueDisplay.Get(player).Show(SpectatorMapInfoTag, element);
         }
 
         // =============== BUILDERS ===============

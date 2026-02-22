@@ -11,8 +11,8 @@ namespace UltimateHUD
 {
     public static class EventHandlers
     {
-        public static readonly Dictionary<string, int> Kills = new();
-        public static int GetKills(Player player) => player != null && Kills.TryGetValue(player.UserId, out var k) ? k : 0;
+        public static readonly Dictionary<Player, int> Kills = new();
+        public static int GetKills(Player player) => player != null && Kills.TryGetValue(player, out var k) ? k : 0;
 
         public static void RegisterEvents()
         {
@@ -102,7 +102,7 @@ namespace UltimateHUD
             if (ev.Player == null)
                 return;
 
-            Kills.Remove(ev.Player.UserId);
+            Kills.Remove(ev.Player);
             RefreshAllSpectatorServerInfo();
         }
 
@@ -123,7 +123,7 @@ namespace UltimateHUD
 
                 RefreshAllSpectatorServerInfo();
 
-                Hints.RefreshSpectatorList(ev.Player.ReferenceHub);
+                Hints.RefreshSpectatorList(ev.Player);
             });
         }
 
@@ -141,7 +141,7 @@ namespace UltimateHUD
                     return;
 
                 RefreshSpectatorListsForTargets(ev.OldTarget, ev.NewTarget);
-                Hints.RefreshSpectatorPlayerInfo(ev.Player.ReferenceHub);
+                Hints.RefreshSpectatorPlayerInfo(ev.Player);
             });
         }
 
@@ -162,7 +162,7 @@ namespace UltimateHUD
 
                 RefreshAllSpectatorServerInfo();
 
-                Hints.RefreshSpectatorList(ev.Player.ReferenceHub);
+                Hints.RefreshSpectatorList(ev.Player);
             });
         }
 
@@ -175,10 +175,10 @@ namespace UltimateHUD
             if (ev.Attacker != null && ev.Attacker != ev.Player)
             {
                 AddKill(ev.Attacker);
-                Hints.RefreshPlayerInfo(ev.Attacker.ReferenceHub);
+                Hints.RefreshPlayerInfo(ev.Attacker);
 
                 foreach (var spec in Player.ReadyList.Where(p => p.RoleBase is SpectatorRole && p.CurrentlySpectating == ev.Attacker))
-                    Hints.RefreshSpectatorPlayerInfo(spec.ReferenceHub);
+                    Hints.RefreshSpectatorPlayerInfo(spec);
             }
         }
 
@@ -187,10 +187,10 @@ namespace UltimateHUD
             if (killer == null)
                 return;
 
-            if (Kills.TryGetValue(killer.UserId, out var v))
-                Kills[killer.UserId] = v + 1;
+            if (Kills.TryGetValue(killer, out var v))
+                Kills[killer] = v + 1;
             else
-                Kills[killer.UserId] = 1;
+                Kills[killer] = 1;
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace UltimateHUD
             if (ev.FirearmItem == null)
                 return;
 
-            Hints.RefreshAmmo(ev.Player.ReferenceHub);
+            Hints.RefreshAmmo(ev.Player);
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace UltimateHUD
             if (ev.FirearmItem == null)
                 return;
 
-            Hints.RefreshAmmo(ev.Player.ReferenceHub);
+            Hints.RefreshAmmo(ev.Player);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace UltimateHUD
             if (ev.FirearmItem == null)
                 return;
 
-            Hints.RefreshAmmo(ev.Player.ReferenceHub);
+            Hints.RefreshAmmo(ev.Player);
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace UltimateHUD
         private static void OnChangedItem(PlayerChangedItemEventArgs ev)
         {
             if (ev.NewItem is FirearmItem || ev.OldItem is FirearmItem)
-                Hints.RefreshAmmo(ev.Player.ReferenceHub);
+                Hints.RefreshAmmo(ev.Player);
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace UltimateHUD
         {
             foreach (var spec in Player.ReadyList.Where(p => p.RoleBase is SpectatorRole))
             {
-                Hints.RefreshSpectatorServerInfo(spec.ReferenceHub);
+                Hints.RefreshSpectatorServerInfo(spec);
             }
         }
 
@@ -259,17 +259,17 @@ namespace UltimateHUD
         {
             foreach (var spec in Player.ReadyList.Where(p => p.RoleBase is SpectatorRole))
             {
-                Hints.RefreshSpectatorMapInfo(spec.ReferenceHub);
+                Hints.RefreshSpectatorMapInfo(spec);
             }
         }
 
         private static void RefreshSpectatorListsForTargets(Player oldTarget, Player newTarget)
         {
             if (oldTarget != null)
-                Hints.RefreshSpectatorList(oldTarget.ReferenceHub);
+                Hints.RefreshSpectatorList(oldTarget);
 
             if (newTarget != null && newTarget != oldTarget)
-                Hints.RefreshSpectatorList(newTarget.ReferenceHub);
+                Hints.RefreshSpectatorList(newTarget);
         }
     }
 }
