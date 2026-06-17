@@ -9,8 +9,8 @@ namespace UltimateHUD
         public override string Name => "UltimateHUD";
         public override string Author => "Vretu";
         public override string Prefix => "UltimateHUD";
-        public override Version Version => new Version(7, 1, 0);
-        public override Version RequiredExiledVersion { get; } = new Version(9, 13, 0);
+        public override Version Version => new Version(7, 1, 1);
+        public override Version RequiredExiledVersion { get; } = new Version(9, 14, 2);
         public static Plugin Instance { get; private set; }
         public HeaderSetting SettingsHeader { get; set; } = new HeaderSetting(5553, "Ultimate HUD");
 
