@@ -157,16 +157,14 @@ namespace UltimateHUD
         {
             if (!Config.EnablePlayerHud) { RueDisplay.Get(player).Remove(PlayerInfoTag); return; }
 
-            var p = Player.Get(player);
-
-            if (p == null ||
-                p.RoleBase is SpectatorRole)
+            if (player == null ||
+                player.RoleBase is SpectatorRole)
             {
                 RueDisplay.Get(player).Remove(PlayerInfoTag);
                 return;
             }
 
-            string text = BuildPlayerInfo(p);
+            string text = BuildPlayerInfo(player);
 
             var element = new BasicElement(Config.PlayerHudYCordinate, text)
             {
@@ -181,17 +179,15 @@ namespace UltimateHUD
         {
             if (!Config.EnableAmmoCounter) { RueDisplay.Get(player).Remove(AmmoTag); return; }
 
-            var p = Player.Get(player);
-
-            if (p == null ||
-                p.RoleBase is SpectatorRole ||
-                p.CurrentItem is not FirearmItem firearm)
+            if (player == null ||
+                player.RoleBase is SpectatorRole ||
+                player.CurrentItem is not FirearmItem firearm)
             {
                 RueDisplay.Get(player).Remove(AmmoTag);
                 return;
             }
 
-            string color = Options.GetRoleColor(p);
+            string color = Options.GetRoleColor(player);
             string weapon = HintBuilding.Sanitize(Translation.GetWeaponDisplayName(firearm));
 
             string weaponLine = Config.WeaponName
@@ -218,17 +214,15 @@ namespace UltimateHUD
         {
             if (!Config.EnableSpectatorList) { RueDisplay.Get(player).Remove(SpectatorsListTag); return; }
 
-            var p = Player.Get(player);
-
-            if (p == null ||
-                p.RoleBase is SpectatorRole ||
-                Config.HiddenForRoles.Contains(p.Role))
+            if (player == null ||
+                player.RoleBase is SpectatorRole ||
+                Config.HiddenForRoles.Contains(player.Role))
             {
                 RueDisplay.Get(player).Remove(SpectatorsListTag);
                 return;
             }
 
-            var spectators = p.CurrentSpectators
+            var spectators = player.CurrentSpectators
                 .Where(s => s.Role != PlayerRoles.RoleTypeId.Overwatch)
                 .ToList();
 
@@ -238,7 +232,7 @@ namespace UltimateHUD
                 return;
             }
 
-            string color = Options.GetRoleColor(p);
+            string color = Options.GetRoleColor(player);
             var sb = new StringBuilder();
             sb.AppendLine(
                 Config.SpectatorListHeader
@@ -271,15 +265,13 @@ namespace UltimateHUD
         {
             if (!Config.EnableSpectatorHud) { RueDisplay.Get(player).Remove(SpectatorPlayerInfoTag); return; }
 
-            var p = Player.Get(player);
-
-            if (p?.RoleBase is not SpectatorRole)
+            if (player?.RoleBase is not SpectatorRole)
             {
                 RueDisplay.Get(player).Remove(SpectatorPlayerInfoTag);
                 return;
             }
 
-            Player observed = p.CurrentlySpectating;
+            Player observed = player.CurrentlySpectating;
 
             if (observed == null)
             {
@@ -302,9 +294,7 @@ namespace UltimateHUD
         {
             if (!Config.EnableSpectatorServerInfo) { RueDisplay.Get(player).Remove(SpectatorServerInfoTag); return; }
 
-            var p = Player.Get(player);
-
-            if (p?.RoleBase is not SpectatorRole)
+            if (player?.RoleBase is not SpectatorRole)
             {
                 RueDisplay.Get(player).Remove(SpectatorServerInfoTag);
                 return;
@@ -332,9 +322,7 @@ namespace UltimateHUD
         {
             if (!Config.EnableSpectatorMapInfo) { RueDisplay.Get(player).Remove(SpectatorMapInfoTag); return; }
 
-            var p = Player.Get(player);
-
-            if (p?.RoleBase is not SpectatorRole)
+            if (player?.RoleBase is not SpectatorRole)
             {
                 RueDisplay.Get(player).Remove(SpectatorMapInfoTag);
                 return;
